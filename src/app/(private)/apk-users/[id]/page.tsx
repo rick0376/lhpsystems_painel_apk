@@ -8,6 +8,14 @@ import { prisma } from "../../../../lib/prisma";
 import { Pencil } from "lucide-react";
 import styles from "./styles.module.scss";
 
+type ApkUserDevice = {
+  id: string;
+  deviceId: string;
+  deviceName: string | null;
+  active: boolean;
+  lastAccessAt: Date | null;
+};
+
 type ApkUserDetailsPageProps = {
   params: Promise<{
     id: string;
@@ -155,7 +163,7 @@ export default async function ApkUserDetailsPage({
           </div>
         ) : (
           <div className={styles.deviceList}>
-            {apkUser.devices.map((device) => (
+            {apkUser.devices.map((device: ApkUserDevice) => (
               <div key={device.id} className={styles.deviceItem}>
                 <div>
                   <strong>{device.deviceName || "Celular sem nome"}</strong>
