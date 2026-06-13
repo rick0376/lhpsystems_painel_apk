@@ -104,20 +104,19 @@ export default async function LicensesPage() {
 
   return (
     <AdminShell>
-      {" "}
       <section className={styles.header}>
-        {" "}
         <div>
-          {" "}
           <span className={styles.badge}>Controle</span>
-          ```
+
           <h1 className={styles.title}>Licenças</h1>
+
           <p className={styles.subtitle}>
             Acompanhe a validade, status e permissões dos usuários vinculados
             aos seus APKs.
           </p>
         </div>
       </section>
+
       <section className={styles.summaryGrid}>
         <div className={styles.summaryCard}>
           <span>Licenças ativas</span>
@@ -139,6 +138,7 @@ export default async function LicensesPage() {
           <strong>{users.length}</strong>
         </div>
       </section>
+
       <section className={styles.card}>
         {users.length === 0 ? (
           <div className={styles.empty}>
