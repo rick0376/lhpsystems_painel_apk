@@ -1,0 +1,57 @@
+/* src/components/layout/AdminNav/styles.module.scss */
+
+.nav {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.item,
+.activeItem,
+.disabledItem {
+  height: 38px;
+  padding: 0 15px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 900;
+  border: 1px solid #252c3e;
+}
+
+.item {
+  color: #d1d5db;
+  background: #0d121d;
+  transition: 0.2s ease;
+
+  &:hover {
+    color: #f5b301;
+    border-color: #f5b301;
+  }
+}
+
+.activeItem {
+  color: #111827;
+  background: #f5b301;
+  border-color: #f5b301;
+}
+
+.disabledItem {
+  color: #6b7280;
+  background: #111827;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 720px) {
+  .nav {
+    padding: 0 18px 14px;
+  }
+}

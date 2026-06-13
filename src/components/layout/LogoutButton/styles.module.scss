@@ -1,0 +1,19 @@
+/* src/components/layout/LogoutButton/styles.module.scss */
+
+.button {
+  height: 42px;
+  padding: 0 18px;
+  border: 1px solid #2a3142;
+  border-radius: 999px;
+  background: #121826;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  &:hover {
+    border-color: #f5b301;
+    color: #f5b301;
+  }
+}

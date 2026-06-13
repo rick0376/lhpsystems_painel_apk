@@ -1,0 +1,185 @@
+/* src/app/(private)/apk-users/new/styles.module.scss */
+
+.header {
+  margin-bottom: 28px;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(245, 179, 1, 0.12);
+  color: #f5b301;
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 16px;
+}
+
+.title {
+  color: #ffffff;
+  font-size: 38px;
+  font-weight: 900;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  color: #9ca3af;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 760px;
+  margin: 0;
+}
+
+.card {
+  max-width: 920px;
+  background: #0d121d;
+  border: 1px solid #252c3e;
+  border-radius: 28px;
+  padding: 26px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.gridTwo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.label {
+  color: #d1d5db;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid #2a3142;
+  background: #121826;
+  color: #ffffff;
+  font-size: 15px;
+  outline: none;
+
+  &:focus {
+    border-color: #f5b301;
+  }
+}
+
+.input {
+  height: 54px;
+  padding: 0 16px;
+}
+
+.textarea {
+  min-height: 118px;
+  padding: 16px;
+  resize: vertical;
+}
+
+.permissionsCard {
+  background: #121826;
+  border: 1px solid #252c3e;
+  border-radius: 22px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  strong {
+    color: #f5b301;
+    font-size: 15px;
+    font-weight: 900;
+    margin-bottom: 2px;
+  }
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #d1d5db;
+  font-size: 14px;
+  font-weight: 800;
+
+  input {
+    width: 18px;
+    height: 18px;
+    accent-color: #f5b301;
+  }
+}
+
+.error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 14px;
+  margin: 0;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.backButton,
+.submitButton {
+  height: 56px;
+  border-radius: 18px;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.backButton {
+  border: 1px solid #2a3142;
+  background: #121826;
+  color: #ffffff;
+
+  &:hover {
+    border-color: #f5b301;
+    color: #f5b301;
+  }
+}
+
+.submitButton {
+  border: none;
+  background: #f5b301;
+  color: #111827;
+}
+
+@media (max-width: 820px) {
+  .title {
+    font-size: 32px;
+  }
+
+  .card {
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .gridTwo {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
+}

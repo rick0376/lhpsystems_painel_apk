@@ -1,0 +1,310 @@
+/* src/app/(private)/apk-users/[id]/styles.module.scss */
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(245, 179, 1, 0.12);
+  color: #f5b301;
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 16px;
+}
+
+.title {
+  color: #ffffff;
+  font-size: 38px;
+  font-weight: 900;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  color: #9ca3af;
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 680px;
+  margin: 0;
+}
+
+.backButton {
+  height: 46px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid #2a3142;
+  background: #121826;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: #f5b301;
+    color: #f5b301;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.card,
+.permissionsCard,
+.notesCard,
+.devicesCard {
+  background: #121826;
+  border: 1px solid #252c3e;
+  border-radius: 24px;
+}
+
+.card {
+  padding: 20px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  strong {
+    color: #ffffff;
+    font-size: 18px;
+    overflow-wrap: anywhere;
+  }
+}
+
+.label {
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.active,
+.inactive,
+.expired {
+  width: fit-content;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+.active {
+  color: #22c55e !important;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.inactive,
+.expired {
+  color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.permissionsCard {
+  padding: 24px;
+  margin-bottom: 18px;
+
+  h2 {
+    color: #ffffff;
+    font-size: 22px;
+    margin: 0 0 18px;
+  }
+}
+
+.permissionsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.permissionItem {
+  background: #0d121d;
+  border: 1px solid #252c3e;
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  span {
+    color: #9ca3af;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  strong {
+    color: #f5b301;
+    font-size: 15px;
+    font-weight: 900;
+  }
+}
+
+.notesCard {
+  padding: 24px;
+  margin-bottom: 18px;
+
+  p {
+    color: #d1d5db;
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 12px 0 0;
+  }
+}
+
+.devicesCard {
+  padding: 24px;
+}
+
+.devicesHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+
+  h2 {
+    color: #ffffff;
+    font-size: 22px;
+    margin: 0 0 8px;
+  }
+
+  p {
+    color: #9ca3af;
+    font-size: 15px;
+    margin: 0;
+  }
+
+  strong {
+    color: #f5b301;
+    font-size: 15px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+}
+
+.emptyDevice {
+  min-height: 120px;
+  border: 1px dashed #2a3142;
+  border-radius: 18px;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 18px;
+}
+
+.deviceList {
+  display: flex;
+  flex-direction: column;
+}
+
+.deviceItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 0;
+  border-bottom: 1px solid #252c3e;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  strong {
+    color: #ffffff;
+    font-size: 15px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  small {
+    color: #9ca3af;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.editButton {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+  font-size: 14px;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: 0.2s ease;
+
+  &:hover {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.22);
+    transform: translateY(-1px);
+  }
+}
+
+@media (max-width: 720px) {
+  .headerActions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .editButton,
+  .backButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 980px) {
+  .grid,
+  .permissionsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .header,
+  .devicesHeader,
+  .deviceItem {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .backButton {
+    width: 100%;
+  }
+
+  .grid,
+  .permissionsGrid {
+    grid-template-columns: 1fr;
+  }
+}

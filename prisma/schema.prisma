@@ -1,0 +1,90 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AdminRole {
+  SUPERADMIN
+  ADMIN
+}
+
+model Admin {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         AdminRole @default(ADMIN)
+  active       Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AppProject {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  appKey      String  @unique
+  description String?
+
+  active Boolean @default(true)
+
+  apkUsers ApkUser[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ApkUser {
+  id String @id @default(cuid())
+
+  projectId String
+  project   AppProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  name         String
+  username     String
+  passwordHash String
+
+  active Boolean @default(true)
+
+  expiresAt DateTime?
+
+  canTransmit        Boolean @default(true)
+  canOpenSettings    Boolean @default(true)
+  canEditRadioConfig Boolean @default(true)
+
+  maxDevices Int @default(1)
+
+  notes String?
+
+  devices Device[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, username])
+  @@index([projectId])
+}
+
+model Device {
+  id String @id @default(cuid())
+
+  apkUserId String
+  apkUser   ApkUser @relation(fields: [apkUserId], references: [id], onDelete: Cascade)
+
+  deviceId   String
+  deviceName String?
+
+  active       Boolean   @default(true)
+  lastAccessAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([apkUserId, deviceId])
+}

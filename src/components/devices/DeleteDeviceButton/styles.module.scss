@@ -1,0 +1,153 @@
+/* src/components/devices/DeleteDeviceButton/styles.module.scss */
+
+.deleteButton {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.22);
+    border-color: #ef4444;
+    transform: translateY(-1px);
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal {
+  width: 100%;
+  max-width: 460px;
+  background: #121826;
+  border: 1px solid #252c3e;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  text-align: center;
+
+  h2 {
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: 950;
+    margin: 12px 0 10px;
+  }
+
+  p {
+    color: #d1d5db;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 0 10px;
+
+    strong {
+      color: #f5b301;
+    }
+  }
+}
+
+.warningIcon {
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+
+.dangerText {
+  color: #ef4444 !important;
+  font-weight: 900;
+}
+
+.error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  margin: 16px 0 0;
+}
+
+.modalActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.cancelButton,
+.confirmButton {
+  height: 50px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 950;
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.cancelButton {
+  border: 1px solid #2a3142;
+  background: #0d121d;
+  color: #ffffff;
+
+  &:hover {
+    border-color: #f5b301;
+    color: #f5b301;
+  }
+}
+
+.confirmButton {
+  border: none;
+  background: #ef4444;
+  color: #ffffff;
+
+  &:hover {
+    filter: brightness(1.05);
+  }
+}
+
+@media (max-width: 720px) {
+  .deleteButton {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 42px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .modal {
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .modalActions {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,389 @@
+/* src/app/(private)/licenses/styles.module.scss */
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(245, 179, 1, 0.12);
+  color: #f5b301;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+
+.title {
+  color: #ffffff;
+  font-size: 38px;
+  font-weight: 950;
+  margin: 0;
+}
+
+.subtitle {
+  color: #aeb4c2;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 10px 0 0;
+  max-width: 680px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.summaryCard {
+  min-height: 110px;
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid #252c3e;
+  background: #121826;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+
+  span {
+    color: #9ca3af;
+    font-size: 13px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  strong {
+    color: #ffffff;
+    font-size: 34px;
+    font-weight: 950;
+  }
+}
+
+.card {
+  width: 100%;
+  border: 1px solid #252c3e;
+  border-radius: 28px;
+  background: #0b1019;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.empty {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+
+  strong {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  span {
+    color: #9ca3af;
+    font-size: 14px;
+  }
+}
+
+.table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tableHeader,
+.tableRow {
+  min-width: 900px;
+  display: grid;
+  grid-template-columns: 1.25fr 1.15fr 0.85fr 0.7fr 0.75fr 100px;
+  align-items: center;
+  gap: 16px;
+}
+
+.tableHeader {
+  min-height: 46px;
+  padding: 0 14px 12px;
+  border-bottom: 1px solid #252c3e;
+
+  span {
+    color: #aeb4c2;
+    font-size: 12px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+.tableRow {
+  min-height: 88px;
+  padding: 18px 14px;
+  border-bottom: 1px solid rgba(37, 44, 62, 0.72);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  strong {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    display: block;
+    margin-bottom: 4px;
+    overflow-wrap: anywhere;
+  }
+
+  small {
+    color: #9ca3af;
+    font-size: 13px;
+    display: block;
+    overflow-wrap: anywhere;
+  }
+
+  span {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+  }
+}
+
+.statusCell {
+  display: flex;
+  align-items: center;
+}
+
+.active,
+.inactive,
+.expired {
+  width: fit-content;
+  min-width: 78px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+}
+
+.active {
+  background: rgba(34, 197, 94, 0.14);
+  color: #22c55e !important;
+}
+
+.inactive {
+  background: rgba(239, 68, 68, 0.14);
+  color: #ef4444 !important;
+}
+
+.expired {
+  background: rgba(245, 179, 1, 0.14);
+  color: #f5b301 !important;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.viewButton,
+.editButton {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.viewButton {
+  border: 1px solid #2a3142;
+  background: #111827;
+  color: #ffffff;
+
+  &:hover {
+    border-color: #f5b301;
+    color: #f5b301;
+  }
+}
+
+.editButton {
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+
+  &:hover {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.22);
+  }
+}
+
+@media (max-width: 980px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card {
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .table {
+    padding-bottom: 8px;
+  }
+
+  .tableHeader,
+  .tableRow {
+    min-width: 840px;
+    grid-template-columns: 1.2fr 1.05fr 0.8fr 0.7fr 0.75fr 100px;
+  }
+}
+
+@media (max-width: 720px) {
+  .title {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryCard {
+    min-height: 96px;
+
+    strong {
+      font-size: 30px;
+    }
+  }
+
+  .card {
+    padding: 0;
+    border: none;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .table {
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
+  .tableRow {
+    min-width: 0;
+    width: 100%;
+    min-height: auto;
+    padding: 18px;
+    border: 1px solid #252c3e;
+    border-radius: 22px;
+    background: #0b1019;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .tableRow > div,
+  .tableRow > span {
+    width: 100%;
+  }
+
+  .tableRow > div:nth-child(1)::before,
+  .tableRow > div:nth-child(2)::before,
+  .tableRow > span:nth-child(3)::before,
+  .tableRow > span:nth-child(4)::before,
+  .statusCell::before {
+    display: block;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .tableRow > div:nth-child(1)::before {
+    content: "Usuário";
+  }
+
+  .tableRow > div:nth-child(2)::before {
+    content: "Projeto";
+  }
+
+  .tableRow > span:nth-child(3)::before {
+    content: "Vencimento";
+  }
+
+  .tableRow > span:nth-child(4)::before {
+    content: "Dispositivos";
+  }
+
+  .statusCell {
+    display: block;
+  }
+
+  .statusCell::before {
+    content: "Status";
+  }
+
+  .actions {
+    width: 100%;
+    padding-top: 12px;
+    border-top: 1px solid #252c3e;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .viewButton,
+  .editButton {
+    width: 100%;
+    height: 42px;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .title {
+    font-size: 30px;
+  }
+
+  .card {
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+}
