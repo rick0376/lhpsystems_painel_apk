@@ -10,6 +10,22 @@ import { prisma } from "../../../lib/prisma";
 import { Eye, Pencil } from "lucide-react";
 import styles from "./styles.module.scss";
 
+type ApkUserListItem = {
+  id: string;
+  name: string;
+  username: string;
+  active: boolean;
+  expiresAt: Date | null;
+  maxDevices: number;
+  project: {
+    name: string;
+    slug: string;
+  };
+  _count: {
+    devices: number;
+  };
+};
+
 export default async function ApkUsersPage() {
   const session = await getAdminSession();
 
@@ -66,7 +82,7 @@ export default async function ApkUsersPage() {
               <span>Ações</span>
             </div>
 
-            {users.map((user) => (
+            {users.map((user: ApkUserListItem) => (
               <div key={user.id} className={styles.tableRow}>
                 <div>
                   <strong>{user.name}</strong>
