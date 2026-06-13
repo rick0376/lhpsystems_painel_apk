@@ -7,6 +7,35 @@ import { getAdminSession } from "../../../lib/auth/session";
 import { prisma } from "../../../lib/prisma";
 import styles from "./styles.module.scss";
 
+type DashboardUser = {
+  id: string;
+  name: string;
+  active: boolean;
+  expiresAt: Date | null;
+  project: {
+    name: string;
+    slug: string;
+  };
+  _count: {
+    devices: number;
+  };
+};
+
+type RecentDevice = {
+  id: string;
+  apkUserId: string;
+  deviceName: string | null;
+  active: boolean;
+  lastAccessAt: Date | null;
+  apkUser: {
+    name: string;
+    username: string;
+    project: {
+      name: string;
+    };
+  };
+};
+
 function formatDate(date: Date | null) {
   if (!date) {
     return "Sem vencimento";
@@ -35,8 +64,8 @@ export default async function DashboardPage() {
 
   const now = new Date();
 
-  const [projectsCount, users, devicesCount, recentDevices] = await Promise.all(
-    [
+  const [projectsCount, users, devicesCount, recentDevices] =
+    (await Promise.all([
       prisma.appProject.count(),
       prisma.apkUser.findMany({
         include: {
@@ -76,21 +105,23 @@ export default async function DashboardPage() {
           },
         },
       }),
-    ],
-  );
+    ])) as [number, DashboardUser[], number, RecentDevice[]];
 
   const activeLicenses = users.filter(
-    (user) => user.active && (!user.expiresAt || user.expiresAt >= now),
+    (user: DashboardUser) =>
+      user.active && (!user.expiresAt || user.expiresAt >= now),
   ).length;
 
   const expiredLicenses = users.filter(
-    (user) => user.expiresAt && user.expiresAt < now,
+    (user: DashboardUser) => !!user.expiresAt && user.expiresAt < now,
   ).length;
 
-  const blockedLicenses = users.filter((user) => !user.active).length;
+  const blockedLicenses = users.filter(
+    (user: DashboardUser) => !user.active,
+  ).length;
 
   const licensesExpiringSoon = users
-    .filter((user) => {
+    .filter((user: DashboardUser) => {
       const days = getDaysToExpire(user.expiresAt);
 
       return user.active && days !== null && days >= 0 && days <= 30;
@@ -153,7 +184,7 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className={styles.list}>
-              {licensesExpiringSoon.map((user) => {
+              {licensesExpiringSoon.map((user: DashboardUser) => {
                 const days = getDaysToExpire(user.expiresAt);
 
                 return (
@@ -193,7 +224,7 @@ export default async function DashboardPage() {
             <div className={styles.empty}>Nenhum dispositivo cadastrado.</div>
           ) : (
             <div className={styles.list}>
-              {recentDevices.map((device) => (
+              {recentDevices.map((device: RecentDevice) => (
                 <Link
                   key={device.id}
                   href={`/apk-users/${device.apkUserId}`}
