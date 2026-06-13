@@ -8,6 +8,28 @@ import { getAdminSession } from "../../../lib/auth/session";
 import { prisma } from "../../../lib/prisma";
 import styles from "./styles.module.scss";
 
+type LicenseUser = {
+  id: string;
+  name: string;
+  username: string;
+  active: boolean;
+  expiresAt: Date | null;
+  maxDevices: number;
+  project: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  _count: {
+    devices: number;
+  };
+};
+
+type LicenseStatus = {
+  label: string;
+  className: string;
+};
+
 function formatDate(date: Date | null) {
   if (!date) {
     return "Sem vencimento";
@@ -16,7 +38,7 @@ function formatDate(date: Date | null) {
   return new Intl.DateTimeFormat("pt-BR").format(date);
 }
 
-function getLicenseStatus(user: { active: boolean; expiresAt: Date | null }) {
+function getLicenseStatus(user: LicenseUser): LicenseStatus {
   const now = new Date();
 
   if (!user.active) {
@@ -46,7 +68,7 @@ export default async function LicensesPage() {
     redirect("/login");
   }
 
-  const users = await prisma.apkUser.findMany({
+  const users = (await prisma.apkUser.findMany({
     orderBy: {
       expiresAt: "asc",
     },
@@ -64,37 +86,38 @@ export default async function LicensesPage() {
         },
       },
     },
-  });
+  })) as LicenseUser[];
 
-  const activeLicenses = users.filter((user) => {
-    const now = new Date();
+  const now = new Date();
 
+  const activeLicenses = users.filter((user: LicenseUser) => {
     return user.active && (!user.expiresAt || user.expiresAt >= now);
   }).length;
 
-  const expiredLicenses = users.filter((user) => {
-    const now = new Date();
-
-    return user.expiresAt && user.expiresAt < now;
+  const expiredLicenses = users.filter((user: LicenseUser) => {
+    return Boolean(user.expiresAt && user.expiresAt < now);
   }).length;
 
-  const blockedLicenses = users.filter((user) => !user.active).length;
+  const blockedLicenses = users.filter((user: LicenseUser) => {
+    return !user.active;
+  }).length;
 
   return (
     <AdminShell>
+      {" "}
       <section className={styles.header}>
+        {" "}
         <div>
+          {" "}
           <span className={styles.badge}>Controle</span>
-
+          ```
           <h1 className={styles.title}>Licenças</h1>
-
           <p className={styles.subtitle}>
             Acompanhe a validade, status e permissões dos usuários vinculados
             aos seus APKs.
           </p>
         </div>
       </section>
-
       <section className={styles.summaryGrid}>
         <div className={styles.summaryCard}>
           <span>Licenças ativas</span>
@@ -116,7 +139,6 @@ export default async function LicensesPage() {
           <strong>{users.length}</strong>
         </div>
       </section>
-
       <section className={styles.card}>
         {users.length === 0 ? (
           <div className={styles.empty}>
@@ -134,7 +156,7 @@ export default async function LicensesPage() {
               <span>Ações</span>
             </div>
 
-            {users.map((user) => {
+            {users.map((user: LicenseUser) => {
               const status = getLicenseStatus(user);
 
               return (
