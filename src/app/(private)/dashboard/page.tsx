@@ -107,16 +107,19 @@ export default async function DashboardPage() {
       }),
     ])) as [number, DashboardUser[], number, RecentDevice[]];
 
-  const activeLicenses = users.filter(
+  const typedUsers = users as DashboardUser[];
+  const typedRecentDevices = recentDevices as RecentDevice[];
+
+  const activeLicenses = typedUsers.filter(
     (user: DashboardUser) =>
       user.active && (!user.expiresAt || user.expiresAt >= now),
   ).length;
 
-  const expiredLicenses = users.filter(
+  const expiredLicenses = typedUsers.filter(
     (user: DashboardUser) => !!user.expiresAt && user.expiresAt < now,
   ).length;
 
-  const blockedLicenses = users.filter(
+  const blockedLicenses = typedUsers.filter(
     (user: DashboardUser) => !user.active,
   ).length;
 
@@ -220,11 +223,11 @@ export default async function DashboardPage() {
             </Link>
           </div>
 
-          {recentDevices.length === 0 ? (
+          {typedRecentDevices.length === 0 ? (
             <div className={styles.empty}>Nenhum dispositivo cadastrado.</div>
           ) : (
             <div className={styles.list}>
-              {recentDevices.map((device: RecentDevice) => (
+              {typedRecentDevices.map((device: RecentDevice) => (
                 <Link
                   key={device.id}
                   href={`/apk-users/${device.apkUserId}`}
@@ -257,7 +260,7 @@ export default async function DashboardPage() {
 
         <div className={styles.alertCard}>
           <span>Total de usuários APK</span>
-          <strong>{users.length}</strong>
+          <strong>{typedUsers.length}</strong>
         </div>
       </section>
     </AdminShell>
