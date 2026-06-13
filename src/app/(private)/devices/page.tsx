@@ -10,6 +10,25 @@ import { getAdminSession } from "../../../lib/auth/session";
 import { prisma } from "../../../lib/prisma";
 import styles from "./styles.module.scss";
 
+type DeviceListItem = {
+  id: string;
+  deviceId: string;
+  deviceName: string | null;
+  active: boolean;
+  lastAccessAt: Date | null;
+  updatedAt: Date;
+  apkUser: {
+    id: string;
+    name: string;
+    username: string;
+    project: {
+      id: string;
+      name: string;
+      slug: string;
+    };
+  };
+};
+
 function formatDate(date: Date | null) {
   if (!date) {
     return "Nunca acessou";
@@ -28,7 +47,7 @@ export default async function DevicesPage() {
     redirect("/login");
   }
 
-  const devices = await prisma.device.findMany({
+  const devices = (await prisma.device.findMany({
     orderBy: {
       updatedAt: "desc",
     },
@@ -48,7 +67,7 @@ export default async function DevicesPage() {
         },
       },
     },
-  });
+  })) as DeviceListItem[];
 
   return (
     <AdminShell>
@@ -81,7 +100,7 @@ export default async function DevicesPage() {
               <span>Ações</span>
             </div>
 
-            {devices.map((device) => (
+            {devices.map((device: DeviceListItem) => (
               <div key={device.id} className={styles.tableRow}>
                 <div>
                   <strong>{device.deviceName || "Sem nome"}</strong>
