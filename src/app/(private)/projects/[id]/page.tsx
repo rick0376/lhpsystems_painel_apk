@@ -1,4 +1,4 @@
-// src/app/(private)/projects/[id]/page.tsx
+//src/app/(private)/projects/[id]/page.tsx
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -8,6 +8,26 @@ import { DeleteProjectButton } from "../../../../components/projects/DeleteProje
 import { getAdminSession } from "../../../../lib/auth/session";
 import { prisma } from "../../../../lib/prisma";
 import styles from "./styles.module.scss";
+
+type ProjectApkUser = {
+  id: string;
+  name: string;
+  username: string;
+  active: boolean;
+};
+
+type ProjectDetails = {
+  id: string;
+  name: string;
+  slug: string;
+  appKey: string;
+  description: string | null;
+  active: boolean;
+  apkUsers: ProjectApkUser[];
+  _count: {
+    apkUsers: number;
+  };
+};
 
 type ProjectDetailsPageProps = {
   params: Promise<{
@@ -26,7 +46,7 @@ export default async function ProjectDetailsPage({
 
   const { id } = await params;
 
-  const project = await prisma.appProject.findUnique({
+  const project = (await prisma.appProject.findUnique({
     where: {
       id,
     },
@@ -48,7 +68,7 @@ export default async function ProjectDetailsPage({
         },
       },
     },
-  });
+  })) as ProjectDetails | null;
 
   if (!project) {
     redirect("/projects");
@@ -145,7 +165,7 @@ export default async function ProjectDetailsPage({
           </div>
         ) : (
           <div className={styles.usersList}>
-            {project.apkUsers.map((user) => (
+            {project.apkUsers.map((user: ProjectApkUser) => (
               <Link
                 key={user.id}
                 href={`/apk-users/${user.id}`}
