@@ -16,6 +16,29 @@ function slugify(value: string) {
     .replace(/(^-|-$)+/g, "");
 }
 
+function onlyDigits(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+function formatWhatsappLabel(value: string) {
+  const digits = onlyDigits(value).slice(0, 11);
+
+  if (digits.length <= 2) {
+    return digits ? `(${digits}` : "";
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+}
+
+function normalizeWhatsappNumber(label: string) {
+  const digits = onlyDigits(label);
+
+  if (!digits) return "";
+  if (digits.startsWith("55")) return digits;
+
+  return `55${digits}`;
+}
+
 export default function NewProjectPage() {
   const router = useRouter();
 
@@ -23,6 +46,11 @@ export default function NewProjectPage() {
   const [slug, setSlug] = useState("");
   const [appKey, setAppKey] = useState("");
   const [description, setDescription] = useState("");
+  const [supportWhatsappLabel, setSupportWhatsappLabel] =
+    useState("(12) 991890682");
+  const [supportWhatsappMessage, setSupportWhatsappMessage] = useState(
+    "Olá, minha licença do LHP Projection Center expirou. Pode me ajudar?",
+  );
   const [active, setActive] = useState(true);
 
   const [loading, setLoading] = useState(false);
@@ -36,7 +64,7 @@ export default function NewProjectPage() {
     }
 
     if (!appKey) {
-      setAppKey(slugify(value).replaceAll("-", "_"));
+      setAppKey(slugify(value).replaceAll("-", "_").toUpperCase());
     }
   }
 
@@ -49,14 +77,15 @@ export default function NewProjectPage() {
     try {
       const response = await fetch("/api/projects", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
           slug,
           appKey,
           description,
+          supportWhatsappLabel,
+          supportWhatsappNumber: normalizeWhatsappNumber(supportWhatsappLabel),
+          supportWhatsappMessage,
           active,
         }),
       });
@@ -82,9 +111,7 @@ export default function NewProjectPage() {
       <section className={styles.header}>
         <div>
           <span className={styles.badge}>Novo aplicativo</span>
-
           <h1 className={styles.title}>Cadastrar projeto APK</h1>
-
           <p className={styles.subtitle}>
             Crie um aplicativo para controlar usuários, licenças e permissões.
           </p>
@@ -105,7 +132,7 @@ export default function NewProjectPage() {
             Nome do projeto
             <input
               className={styles.input}
-              placeholder="Ex: LHP Live Prayer"
+              placeholder="Ex: LHP Projection Center"
               value={name}
               onChange={(event) => handleNameChange(event.target.value)}
             />
@@ -115,7 +142,7 @@ export default function NewProjectPage() {
             Slug
             <input
               className={styles.input}
-              placeholder="ex: lhp-live-prayer"
+              placeholder="ex: lhp-projection-center"
               value={slug}
               onChange={(event) => setSlug(slugify(event.target.value))}
             />
@@ -125,9 +152,33 @@ export default function NewProjectPage() {
             App Key
             <input
               className={styles.input}
-              placeholder="ex: lhp_live_prayer"
+              placeholder="ex: LHP_PROJECTION_CENTER"
               value={appKey}
-              onChange={(event) => setAppKey(event.target.value)}
+              onChange={(event) => setAppKey(event.target.value.toUpperCase())}
+            />
+          </label>
+
+          <label className={styles.label}>
+            WhatsApp de suporte
+            <input
+              className={styles.input}
+              placeholder="Ex: (12) 991890682"
+              value={supportWhatsappLabel}
+              onChange={(event) =>
+                setSupportWhatsappLabel(formatWhatsappLabel(event.target.value))
+              }
+            />
+          </label>
+
+          <label className={styles.label}>
+            Mensagem padrão do WhatsApp
+            <textarea
+              className={styles.textarea}
+              placeholder="Mensagem enviada pelo cliente"
+              value={supportWhatsappMessage}
+              onChange={(event) =>
+                setSupportWhatsappMessage(event.target.value)
+              }
             />
           </label>
 

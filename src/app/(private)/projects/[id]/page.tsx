@@ -22,17 +22,16 @@ type ProjectDetails = {
   slug: string;
   appKey: string;
   description: string | null;
+  supportWhatsappLabel: string | null;
+  supportWhatsappNumber: string | null;
+  supportWhatsappMessage: string | null;
   active: boolean;
   apkUsers: ProjectApkUser[];
-  _count: {
-    apkUsers: number;
-  };
+  _count: { apkUsers: number };
 };
 
 type ProjectDetailsPageProps = {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 };
 
 export default async function ProjectDetailsPage({
@@ -47,14 +46,10 @@ export default async function ProjectDetailsPage({
   const { id } = await params;
 
   const project = (await prisma.appProject.findUnique({
-    where: {
-      id,
-    },
+    where: { id },
     include: {
       apkUsers: {
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy: { createdAt: "desc" },
         select: {
           id: true,
           name: true,
@@ -63,9 +58,7 @@ export default async function ProjectDetailsPage({
         },
       },
       _count: {
-        select: {
-          apkUsers: true,
-        },
+        select: { apkUsers: true },
       },
     },
   })) as ProjectDetails | null;
@@ -79,9 +72,7 @@ export default async function ProjectDetailsPage({
       <section className={styles.header}>
         <div className={styles.headerContent}>
           <span className={styles.badge}>Projeto APK</span>
-
           <h1 className={styles.title}>{project.name}</h1>
-
           <p className={styles.subtitle}>
             Gerencie os dados, usuários e permissões deste aplicativo.
           </p>
@@ -125,24 +116,34 @@ export default async function ProjectDetailsPage({
 
         <div className={styles.card}>
           <span className={styles.label}>Status</span>
-
           <span className={project.active ? styles.active : styles.inactive}>
             {project.active ? "Ativo" : "Bloqueado"}
           </span>
+        </div>
+
+        <div className={styles.card}>
+          <span className={styles.label}>WhatsApp suporte</span>
+          <strong>{project.supportWhatsappLabel || "(12) 991890682"}</strong>
         </div>
       </section>
 
       <section className={styles.descriptionCard}>
         <span className={styles.label}>Descrição</span>
-
         <p>{project.description || "Nenhuma descrição cadastrada."}</p>
+      </section>
+
+      <section className={styles.descriptionCard}>
+        <span className={styles.label}>Mensagem de suporte</span>
+        <p>
+          {project.supportWhatsappMessage ||
+            "Olá, minha licença do LHP Projection Center expirou. Pode me ajudar?"}
+        </p>
       </section>
 
       <section className={styles.usersCard}>
         <div className={styles.usersHeader}>
           <div>
             <h2>Usuários deste APK</h2>
-
             <p>
               Este projeto possui{" "}
               <strong>{project._count.apkUsers} usuário(s)</strong>{" "}

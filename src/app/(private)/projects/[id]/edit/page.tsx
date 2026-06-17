@@ -9,9 +9,7 @@ import { EditProjectForm } from "./EditProjectForm";
 import styles from "./styles.module.scss";
 
 type EditProjectPageProps = {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 };
 
 export default async function EditProjectPage({
@@ -26,15 +24,16 @@ export default async function EditProjectPage({
   const { id } = await params;
 
   const project = await prisma.appProject.findUnique({
-    where: {
-      id,
-    },
+    where: { id },
     select: {
       id: true,
       name: true,
       slug: true,
       appKey: true,
       description: true,
+      supportWhatsappLabel: true,
+      supportWhatsappNumber: true,
+      supportWhatsappMessage: true,
       active: true,
     },
   });
@@ -48,12 +47,10 @@ export default async function EditProjectPage({
       <section className={styles.header}>
         <div>
           <span className={styles.badge}>Editar projeto</span>
-
           <h1 className={styles.title}>{project.name}</h1>
-
           <p className={styles.subtitle}>
-            Altere os dados principais do aplicativo, sua chave de identificação
-            e o status de uso no painel.
+            Altere os dados principais do aplicativo, sua chave de
+            identificação, suporte e o status de uso no painel.
           </p>
         </div>
 
@@ -69,6 +66,9 @@ export default async function EditProjectPage({
           slug: project.slug,
           appKey: project.appKey,
           description: project.description || "",
+          supportWhatsappLabel: project.supportWhatsappLabel || "",
+          supportWhatsappNumber: project.supportWhatsappNumber || "",
+          supportWhatsappMessage: project.supportWhatsappMessage || "",
           active: project.active,
         }}
       />

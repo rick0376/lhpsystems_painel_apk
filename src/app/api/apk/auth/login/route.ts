@@ -5,6 +5,64 @@ import { z } from "zod";
 import { comparePassword } from "../../../../../lib/auth/password";
 import { prisma } from "../../../../../lib/prisma";
 
+const DEFAULT_SUPPORT_LABEL = "(12) 991890682";
+const DEFAULT_SUPPORT_NUMBER = "5512991890682";
+const DEFAULT_SUPPORT_MESSAGE =
+  "Olá, minha licença do LHP Projection Center expirou. Pode me ajudar?";
+
+type SupportProject = {
+  supportWhatsappLabel?: string | null;
+  supportWhatsappNumber?: string | null;
+  supportWhatsappMessage?: string | null;
+};
+
+function onlyDigits(value?: string | null) {
+  return (value || "").replace(/\D/g, "");
+}
+
+function buildSupport(project?: SupportProject | null) {
+  const whatsappLabel =
+    project?.supportWhatsappLabel?.trim() || DEFAULT_SUPPORT_LABEL;
+
+  const rawNumber =
+    onlyDigits(project?.supportWhatsappNumber) ||
+    onlyDigits(project?.supportWhatsappLabel) ||
+    DEFAULT_SUPPORT_NUMBER;
+
+  const whatsappNumber = rawNumber.startsWith("55")
+    ? rawNumber
+    : rawNumber.length === 10 || rawNumber.length === 11
+      ? `55${rawNumber}`
+      : rawNumber;
+
+  const whatsappMessage =
+    project?.supportWhatsappMessage?.trim() || DEFAULT_SUPPORT_MESSAGE;
+
+  return {
+    whatsappLabel,
+    whatsappNumber,
+    whatsappMessage,
+    whatsappUrl: whatsappNumber
+      ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`
+      : null,
+  };
+}
+
+function denied(
+  error: string,
+  status: number,
+  project?: SupportProject | null,
+) {
+  return NextResponse.json(
+    {
+      allowed: false,
+      error,
+      support: buildSupport(project),
+    },
+    { status },
+  );
+}
+
 const apkLoginSchema = z.object({
   appKey: z.string().min(1, "App Key obrigatória"),
   username: z.string().min(1, "Usuário obrigatório"),
@@ -16,25 +74,14 @@ const apkLoginSchema = z.object({
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
     const data = apkLoginSchema.parse(body);
 
     const project = await prisma.appProject.findUnique({
-      where: {
-        appKey: data.appKey,
-      },
+      where: { appKey: data.appKey },
     });
 
     if (!project || !project.active) {
-      return NextResponse.json(
-        {
-          allowed: false,
-          error: "Aplicativo não autorizado.",
-        },
-        {
-          status: 401,
-        },
-      );
+      return denied("Aplicativo não autorizado.", 401, project);
     }
 
     const apkUser = await prisma.apkUser.findFirst({
@@ -42,21 +89,11 @@ export async function POST(request: Request) {
         projectId: project.id,
         username: data.username,
       },
-      include: {
-        devices: true,
-      },
+      include: { devices: true },
     });
 
     if (!apkUser) {
-      return NextResponse.json(
-        {
-          allowed: false,
-          error: "Usuário ou senha inválidos.",
-        },
-        {
-          status: 401,
-        },
-      );
+      return denied("Usuário ou senha inválidos.", 401, project);
     }
 
     const passwordIsValid = await comparePassword(
@@ -65,41 +102,17 @@ export async function POST(request: Request) {
     );
 
     if (!passwordIsValid) {
-      return NextResponse.json(
-        {
-          allowed: false,
-          error: "Usuário ou senha inválidos.",
-        },
-        {
-          status: 401,
-        },
-      );
+      return denied("Usuário ou senha inválidos.", 401, project);
     }
 
     if (!apkUser.active) {
-      return NextResponse.json(
-        {
-          allowed: false,
-          error: "Usuário bloqueado.",
-        },
-        {
-          status: 403,
-        },
-      );
+      return denied("Usuário bloqueado.", 403, project);
     }
 
     const now = new Date();
 
     if (apkUser.expiresAt && apkUser.expiresAt < now) {
-      return NextResponse.json(
-        {
-          allowed: false,
-          error: "Licença expirada.",
-        },
-        {
-          status: 403,
-        },
-      );
+      return denied("Licença expirada.", 403, project);
     }
 
     const existingDevice = await prisma.device.findUnique({
@@ -112,35 +125,16 @@ export async function POST(request: Request) {
     });
 
     if (existingDevice && !existingDevice.active) {
-      return NextResponse.json(
-        {
-          allowed: false,
-          error: "Este dispositivo está bloqueado.",
-        },
-        {
-          status: 403,
-        },
-      );
+      return denied("Este dispositivo está bloqueado.", 403, project);
     }
 
     if (!existingDevice) {
       const activeDevicesCount = await prisma.device.count({
-        where: {
-          apkUserId: apkUser.id,
-          active: true,
-        },
+        where: { apkUserId: apkUser.id, active: true },
       });
 
       if (activeDevicesCount >= apkUser.maxDevices) {
-        return NextResponse.json(
-          {
-            allowed: false,
-            error: "Limite de dispositivos atingido.",
-          },
-          {
-            status: 403,
-          },
-        );
+        return denied("Limite de dispositivos atingido.", 403, project);
       }
 
       await prisma.device.create({
@@ -154,9 +148,7 @@ export async function POST(request: Request) {
       });
     } else {
       await prisma.device.update({
-        where: {
-          id: existingDevice.id,
-        },
+        where: { id: existingDevice.id },
         data: {
           deviceName: data.deviceName || existingDevice.deviceName,
           lastAccessAt: now,
@@ -166,6 +158,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       allowed: true,
+      support: buildSupport(project),
       user: {
         id: apkUser.id,
         name: apkUser.name,
@@ -185,25 +178,9 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          allowed: false,
-          error: error.issues[0]?.message || "Dados inválidos.",
-        },
-        {
-          status: 400,
-        },
-      );
+      return denied(error.issues[0]?.message || "Dados inválidos.", 400);
     }
 
-    return NextResponse.json(
-      {
-        allowed: false,
-        error: "Não foi possível validar o acesso.",
-      },
-      {
-        status: 400,
-      },
-    );
+    return denied("Não foi possível validar o acesso.", 400);
   }
 }

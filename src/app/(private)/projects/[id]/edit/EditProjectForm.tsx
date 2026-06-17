@@ -13,6 +13,9 @@ type EditableProject = {
   slug: string;
   appKey: string;
   description: string;
+  supportWhatsappLabel: string;
+  supportWhatsappNumber: string;
+  supportWhatsappMessage: string;
   active: boolean;
 };
 
@@ -30,6 +33,29 @@ function slugify(value: string) {
     .replace(/\s+/g, "-");
 }
 
+function onlyDigits(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+function formatWhatsappLabel(value: string) {
+  const digits = onlyDigits(value).slice(0, 11);
+
+  if (digits.length <= 2) {
+    return digits ? `(${digits}` : "";
+  }
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+}
+
+function normalizeWhatsappNumber(label: string) {
+  const digits = onlyDigits(label);
+
+  if (!digits) return "";
+  if (digits.startsWith("55")) return digits;
+
+  return `55${digits}`;
+}
+
 export function EditProjectForm({ project }: EditProjectFormProps) {
   const router = useRouter();
 
@@ -37,6 +63,13 @@ export function EditProjectForm({ project }: EditProjectFormProps) {
   const [slug, setSlug] = useState(project.slug);
   const [appKey, setAppKey] = useState(project.appKey);
   const [description, setDescription] = useState(project.description);
+  const [supportWhatsappLabel, setSupportWhatsappLabel] = useState(
+    project.supportWhatsappLabel || "(12) 991890682",
+  );
+  const [supportWhatsappMessage, setSupportWhatsappMessage] = useState(
+    project.supportWhatsappMessage ||
+      "Olá, minha licença do LHP Projection Center expirou. Pode me ajudar?",
+  );
   const [active, setActive] = useState(project.active);
 
   const [loading, setLoading] = useState(false);
@@ -59,14 +92,15 @@ export function EditProjectForm({ project }: EditProjectFormProps) {
     try {
       const response = await fetch(`/api/projects/${project.id}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
           slug,
           appKey,
           description,
+          supportWhatsappLabel,
+          supportWhatsappNumber: normalizeWhatsappNumber(supportWhatsappLabel),
+          supportWhatsappMessage,
           active,
         }),
       });
@@ -97,7 +131,7 @@ export function EditProjectForm({ project }: EditProjectFormProps) {
           <input
             className={styles.input}
             type="text"
-            placeholder="Ex: LHP Live Prayer"
+            placeholder="Ex: LHP Projection Center"
             value={name}
             onChange={(event) => handleNameChange(event.target.value)}
           />
@@ -108,7 +142,7 @@ export function EditProjectForm({ project }: EditProjectFormProps) {
           <input
             className={styles.input}
             type="text"
-            placeholder="Ex: lhp-live-prayer"
+            placeholder="Ex: lhp-projection-center"
             value={slug}
             onChange={(event) => setSlug(slugify(event.target.value))}
           />
@@ -119,9 +153,22 @@ export function EditProjectForm({ project }: EditProjectFormProps) {
           <input
             className={styles.input}
             type="text"
-            placeholder="Ex: lhp_live_prayer_2026"
+            placeholder="Ex: LHP_PROJECTION_CENTER"
             value={appKey}
-            onChange={(event) => setAppKey(event.target.value)}
+            onChange={(event) => setAppKey(event.target.value.toUpperCase())}
+          />
+        </label>
+
+        <label className={styles.label}>
+          WhatsApp de suporte
+          <input
+            className={styles.input}
+            type="text"
+            placeholder="Ex: (12) 991890682"
+            value={supportWhatsappLabel}
+            onChange={(event) =>
+              setSupportWhatsappLabel(formatWhatsappLabel(event.target.value))
+            }
           />
         </label>
 
@@ -134,6 +181,16 @@ export function EditProjectForm({ project }: EditProjectFormProps) {
           Projeto ativo
         </label>
       </div>
+
+      <label className={styles.label}>
+        Mensagem padrão do WhatsApp
+        <textarea
+          className={styles.textarea}
+          placeholder="Mensagem enviada pelo cliente"
+          value={supportWhatsappMessage}
+          onChange={(event) => setSupportWhatsappMessage(event.target.value)}
+        />
+      </label>
 
       <label className={styles.label}>
         Descrição

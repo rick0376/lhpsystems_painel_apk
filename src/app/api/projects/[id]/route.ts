@@ -6,10 +6,25 @@ import { getAdminSession } from "../../../../lib/auth/session";
 import { prisma } from "../../../../lib/prisma";
 
 type ProjectRouteProps = {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 };
+
+function onlyDigits(value?: string | null) {
+  return (value || "").replace(/\D/g, "");
+}
+
+function normalizeWhatsappNumber(
+  label?: string | null,
+  number?: string | null,
+) {
+  const raw = onlyDigits(number || label);
+
+  if (!raw) return "";
+  if (raw.startsWith("55")) return raw;
+  if (raw.length === 10 || raw.length === 11) return `55${raw}`;
+
+  return raw;
+}
 
 const updateProjectSchema = z.object({
   name: z.string().min(2, "Nome obrigatório").optional(),
@@ -23,6 +38,9 @@ const updateProjectSchema = z.object({
     .min(4, "App Key precisa ter no mínimo 4 caracteres")
     .optional(),
   description: z.string().optional(),
+  supportWhatsappLabel: z.string().optional(),
+  supportWhatsappNumber: z.string().optional(),
+  supportWhatsappMessage: z.string().optional(),
   active: z.boolean().optional(),
 });
 
@@ -30,119 +48,92 @@ export async function PATCH(request: Request, { params }: ProjectRouteProps) {
   const session = await getAdminSession();
 
   if (!session) {
-    return NextResponse.json(
-      {
-        error: "Não autorizado.",
-      },
-      {
-        status: 401,
-      },
-    );
+    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
   }
 
   try {
     const { id } = await params;
     const body = await request.json();
-
     const data = updateProjectSchema.parse(body);
 
-    const project = await prisma.appProject.findUnique({
-      where: {
-        id,
-      },
-    });
+    const project = await prisma.appProject.findUnique({ where: { id } });
 
     if (!project) {
       return NextResponse.json(
-        {
-          error: "Projeto não encontrado.",
-        },
-        {
-          status: 404,
-        },
+        { error: "Projeto não encontrado." },
+        { status: 404 },
       );
     }
 
     if (data.slug) {
       const projectWithSameSlug = await prisma.appProject.findFirst({
-        where: {
-          id: {
-            not: id,
-          },
-          slug: data.slug,
-        },
+        where: { id: { not: id }, slug: data.slug },
       });
 
       if (projectWithSameSlug) {
         return NextResponse.json(
-          {
-            error: "Já existe outro projeto cadastrado com esse slug.",
-          },
-          {
-            status: 400,
-          },
+          { error: "Já existe outro projeto cadastrado com esse slug." },
+          { status: 400 },
         );
       }
     }
 
     if (data.appKey) {
       const projectWithSameAppKey = await prisma.appProject.findFirst({
-        where: {
-          id: {
-            not: id,
-          },
-          appKey: data.appKey,
-        },
+        where: { id: { not: id }, appKey: data.appKey },
       });
 
       if (projectWithSameAppKey) {
         return NextResponse.json(
-          {
-            error: "Já existe outro projeto cadastrado com essa App Key.",
-          },
-          {
-            status: 400,
-          },
+          { error: "Já existe outro projeto cadastrado com essa App Key." },
+          { status: 400 },
         );
       }
     }
 
+    const supportWhatsappLabel = data.supportWhatsappLabel?.trim() || null;
+    const supportWhatsappNumber =
+      data.supportWhatsappLabel !== undefined ||
+      data.supportWhatsappNumber !== undefined
+        ? normalizeWhatsappNumber(
+            data.supportWhatsappLabel,
+            data.supportWhatsappNumber,
+          ) || null
+        : undefined;
+
     const updatedProject = await prisma.appProject.update({
-      where: {
-        id,
-      },
+      where: { id },
       data: {
         name: data.name,
         slug: data.slug,
         appKey: data.appKey,
         description:
           data.description !== undefined ? data.description || null : undefined,
+        supportWhatsappLabel:
+          data.supportWhatsappLabel !== undefined
+            ? supportWhatsappLabel
+            : undefined,
+        supportWhatsappNumber,
+        supportWhatsappMessage:
+          data.supportWhatsappMessage !== undefined
+            ? data.supportWhatsappMessage?.trim() || null
+            : undefined,
         active: data.active,
       },
     });
 
-    return NextResponse.json({
-      project: updatedProject,
-    });
+    return NextResponse.json({ project: updatedProject });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        {
-          error: error.issues[0]?.message || "Dados inválidos.",
-        },
-        {
-          status: 400,
-        },
+        { error: error.issues[0]?.message || "Dados inválidos." },
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
-      {
-        error: "Não foi possível atualizar o projeto.",
-      },
-      {
-        status: 400,
-      },
+      { error: "Não foi possível atualizar o projeto." },
+      { status: 400 },
     );
   }
 }
@@ -151,41 +142,21 @@ export async function DELETE(_request: Request, { params }: ProjectRouteProps) {
   const session = await getAdminSession();
 
   if (!session) {
-    return NextResponse.json(
-      {
-        error: "Não autorizado.",
-      },
-      {
-        status: 401,
-      },
-    );
+    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
   }
 
   try {
     const { id } = await params;
-
-    const project = await prisma.appProject.findUnique({
-      where: {
-        id,
-      },
-    });
+    const project = await prisma.appProject.findUnique({ where: { id } });
 
     if (!project) {
       return NextResponse.json(
-        {
-          error: "Projeto não encontrado.",
-        },
-        {
-          status: 404,
-        },
+        { error: "Projeto não encontrado." },
+        { status: 404 },
       );
     }
 
-    await prisma.appProject.delete({
-      where: {
-        id,
-      },
-    });
+    await prisma.appProject.delete({ where: { id } });
 
     return NextResponse.json({
       success: true,
@@ -193,12 +164,8 @@ export async function DELETE(_request: Request, { params }: ProjectRouteProps) {
     });
   } catch {
     return NextResponse.json(
-      {
-        error: "Não foi possível excluir o projeto.",
-      },
-      {
-        status: 400,
-      },
+      { error: "Não foi possível excluir o projeto." },
+      { status: 400 },
     );
   }
 }
