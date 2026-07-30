@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Pencil, Plus } from "lucide-react";
+import { Pencil, Plus, Radio } from "lucide-react";
 import { AdminShell } from "../../../../components/layout/AdminShell/AdminShell";
 import { DeleteProjectButton } from "../../../../components/projects/DeleteProjectButton/DeleteProjectButton";
 import { getAdminSession } from "../../../../lib/auth/session";
@@ -83,6 +83,14 @@ export default async function ProjectDetailsPage({
             projectId={project.id}
             projectName={project.name}
           />
+
+          <Link
+            href={`/projects/${project.id}/radio`}
+            className={styles.radioButton}
+          >
+            <Radio size={18} strokeWidth={2.4} />
+            Configurar rádio
+          </Link>
 
           <Link
             href={`/projects/${project.id}/edit`}

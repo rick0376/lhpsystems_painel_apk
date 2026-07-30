@@ -51,6 +51,7 @@
   flex-shrink: 0;
 }
 
+.radioButton,
 .editButton,
 .backButton,
 .primaryButton {
@@ -68,6 +69,18 @@
 
   &:hover {
     transform: translateY(-1px);
+  }
+}
+
+
+.radioButton {
+  border: 1px solid rgba(245, 179, 1, 0.35);
+  background: rgba(245, 179, 1, 0.12);
+  color: #f5b301;
+
+  &:hover {
+    border-color: #f5b301;
+    background: rgba(245, 179, 1, 0.2);
   }
 }
 

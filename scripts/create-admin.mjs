@@ -1,35 +1,35 @@
-// scripts/create-admin.mjs
-
 import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const connectionString = process.env.DATABASE_URL;
+const name = process.env.ADMIN_NAME?.trim();
+const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+const password = process.env.ADMIN_PASSWORD;
 
 if (!connectionString) {
   throw new Error("DATABASE_URL não configurada no .env");
 }
 
-const adapter = new PrismaPg({
-  connectionString,
-});
+if (!name || !email || !password) {
+  throw new Error(
+    "ADMIN_NAME, ADMIN_EMAIL e ADMIN_PASSWORD são obrigatórios. Nenhuma senha padrão será utilizada.",
+  );
+}
 
-const prisma = new PrismaClient({
-  adapter,
-});
+if (password.length < 12) {
+  throw new Error("ADMIN_PASSWORD precisa ter pelo menos 12 caracteres.");
+}
+
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const name = process.env.ADMIN_NAME || "Rick Pereira";
-  const email = process.env.ADMIN_EMAIL || "admin@lhpsystems.com";
-  const password = process.env.ADMIN_PASSWORD || "123456";
-
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await bcrypt.hash(password, 12);
 
   const admin = await prisma.admin.upsert({
-    where: {
-      email,
-    },
+    where: { email },
     update: {
       name,
       passwordHash,

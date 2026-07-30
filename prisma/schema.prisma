@@ -36,7 +36,32 @@ model AppProject {
 
   active Boolean @default(true)
 
-  apkUsers ApkUser[]
+  apkUsers    ApkUser[]
+  radioConfig RadioStreamConfig?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RadioStreamConfig {
+  id String @id @default(cuid())
+
+  projectId String     @unique
+  project   AppProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  host                    String
+  sourcePort              Int
+  publicPort              Int?
+  playerUrl               String?
+  sourceUsername          String  @default("live")
+  sourcePasswordEncrypted String
+  mountPoint              String  @default("/")
+  useTls                  Boolean @default(false)
+  enabled                 Boolean @default(true)
+  bitrate                 Int     @default(128)
+  sampleRate              Int     @default(44100)
+  channels                Int     @default(2)
+  version                 Int     @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

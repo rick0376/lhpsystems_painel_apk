@@ -1,14 +1,13 @@
-// src/app/api/apk/auth/login/route.ts
-
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { createApkToken } from "../../../../../lib/auth/apk-token";
 import { comparePassword } from "../../../../../lib/auth/password";
 import { prisma } from "../../../../../lib/prisma";
 
 const DEFAULT_SUPPORT_LABEL = "(12) 991890682";
 const DEFAULT_SUPPORT_NUMBER = "5512991890682";
 const DEFAULT_SUPPORT_MESSAGE =
-  "Olá, minha licença do LHP Projection Center expirou. Pode me ajudar?";
+  "Olá, preciso de ajuda com meu acesso ao aplicativo.";
 
 type SupportProject = {
   supportWhatsappLabel?: string | null;
@@ -23,18 +22,15 @@ function onlyDigits(value?: string | null) {
 function buildSupport(project?: SupportProject | null) {
   const whatsappLabel =
     project?.supportWhatsappLabel?.trim() || DEFAULT_SUPPORT_LABEL;
-
   const rawNumber =
     onlyDigits(project?.supportWhatsappNumber) ||
     onlyDigits(project?.supportWhatsappLabel) ||
     DEFAULT_SUPPORT_NUMBER;
-
   const whatsappNumber = rawNumber.startsWith("55")
     ? rawNumber
     : rawNumber.length === 10 || rawNumber.length === 11
       ? `55${rawNumber}`
       : rawNumber;
-
   const whatsappMessage =
     project?.supportWhatsappMessage?.trim() || DEFAULT_SUPPORT_MESSAGE;
 
@@ -48,34 +44,24 @@ function buildSupport(project?: SupportProject | null) {
   };
 }
 
-function denied(
-  error: string,
-  status: number,
-  project?: SupportProject | null,
-) {
+function denied(error: string, status: number, project?: SupportProject | null) {
   return NextResponse.json(
-    {
-      allowed: false,
-      error,
-      support: buildSupport(project),
-    },
-    { status },
+    { allowed: false, error, support: buildSupport(project) },
+    { status, headers: { "Cache-Control": "no-store" } },
   );
 }
 
 const apkLoginSchema = z.object({
-  appKey: z.string().min(1, "App Key obrigatória"),
-  username: z.string().min(1, "Usuário obrigatório"),
-  password: z.string().min(1, "Senha obrigatória"),
-  deviceId: z.string().min(1, "ID do dispositivo obrigatório"),
-  deviceName: z.string().optional(),
+  appKey: z.string().min(1, "App Key obrigatória").max(200),
+  username: z.string().trim().min(1, "Usuário obrigatório").max(100),
+  password: z.string().min(1, "Senha obrigatória").max(300),
+  deviceId: z.string().min(8, "ID do dispositivo inválido").max(200),
+  deviceName: z.string().trim().max(200).optional(),
 });
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const data = apkLoginSchema.parse(body);
-
+    const data = apkLoginSchema.parse(await request.json());
     const project = await prisma.appProject.findUnique({
       where: { appKey: data.appKey },
     });
@@ -85,11 +71,7 @@ export async function POST(request: Request) {
     }
 
     const apkUser = await prisma.apkUser.findFirst({
-      where: {
-        projectId: project.id,
-        username: data.username,
-      },
-      include: { devices: true },
+      where: { projectId: project.id, username: data.username },
     });
 
     if (!apkUser) {
@@ -156,26 +138,37 @@ export async function POST(request: Request) {
       });
     }
 
-    return NextResponse.json({
-      allowed: true,
-      support: buildSupport(project),
-      user: {
-        id: apkUser.id,
-        name: apkUser.name,
-        username: apkUser.username,
-        expiresAt: apkUser.expiresAt,
-        canTransmit: apkUser.canTransmit,
-        canOpenSettings: apkUser.canOpenSettings,
-        canEditRadioConfig: apkUser.canEditRadioConfig,
-        maxDevices: apkUser.maxDevices,
-      },
-      project: {
-        id: project.id,
-        name: project.name,
-        slug: project.slug,
-        appKey: project.appKey,
-      },
+    const access = await createApkToken({
+      userId: apkUser.id,
+      projectId: project.id,
+      deviceId: data.deviceId,
     });
+
+    return NextResponse.json(
+      {
+        allowed: true,
+        accessToken: access.token,
+        expiresInSeconds: access.expiresInSeconds,
+        support: buildSupport(project),
+        user: {
+          id: apkUser.id,
+          name: apkUser.name,
+          username: apkUser.username,
+          expiresAt: apkUser.expiresAt,
+          canTransmit: apkUser.canTransmit,
+          canOpenSettings: apkUser.canOpenSettings,
+          canEditRadioConfig: false,
+          maxDevices: apkUser.maxDevices,
+        },
+        project: {
+          id: project.id,
+          name: project.name,
+          slug: project.slug,
+          appKey: project.appKey,
+        },
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return denied(error.issues[0]?.message || "Dados inválidos.", 400);
