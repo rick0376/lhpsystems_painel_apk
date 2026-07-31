@@ -32,6 +32,17 @@ const updateUserSchema = z.object({
   canTransmit: z.boolean().optional(),
   canOpenSettings: z.boolean().optional(),
   canEditRadioConfig: z.boolean().optional(),
+  canAccessRadioManager: z.boolean().optional(),
+  canViewRadioDashboard: z.boolean().optional(),
+  canManageAutoDj: z.boolean().optional(),
+  canViewRadioLibrary: z.boolean().optional(),
+  canUploadRadioTracks: z.boolean().optional(),
+  canDeleteRadioTracks: z.boolean().optional(),
+  canManageRadioPlaylists: z.boolean().optional(),
+  canManageRadioSchedules: z.boolean().optional(),
+  canManageRadioIntervals: z.boolean().optional(),
+  canManageRadioSettings: z.boolean().optional(),
+  canViewRadioAudit: z.boolean().optional(),
   maxDevices: z.number().min(1, "Informe pelo menos 1 dispositivo").optional(),
   notes: z.string().optional(),
 });
@@ -107,6 +118,17 @@ export async function PATCH(request: Request, { params }: ApkUserRouteProps) {
       canTransmit?: boolean;
       canOpenSettings?: boolean;
       canEditRadioConfig?: boolean;
+      canAccessRadioManager?: boolean;
+      canViewRadioDashboard?: boolean;
+      canManageAutoDj?: boolean;
+      canViewRadioLibrary?: boolean;
+      canUploadRadioTracks?: boolean;
+      canDeleteRadioTracks?: boolean;
+      canManageRadioPlaylists?: boolean;
+      canManageRadioSchedules?: boolean;
+      canManageRadioIntervals?: boolean;
+      canManageRadioSettings?: boolean;
+      canViewRadioAudit?: boolean;
       maxDevices?: number;
       notes?: string | null;
     } = {};
@@ -121,6 +143,17 @@ export async function PATCH(request: Request, { params }: ApkUserRouteProps) {
       updateData.canOpenSettings = data.canOpenSettings;
     if (data.canEditRadioConfig !== undefined)
       updateData.canEditRadioConfig = data.canEditRadioConfig;
+    if (data.canAccessRadioManager !== undefined) updateData.canAccessRadioManager = data.canAccessRadioManager;
+    if (data.canViewRadioDashboard !== undefined) updateData.canViewRadioDashboard = data.canViewRadioDashboard;
+    if (data.canManageAutoDj !== undefined) updateData.canManageAutoDj = data.canManageAutoDj;
+    if (data.canViewRadioLibrary !== undefined) updateData.canViewRadioLibrary = data.canViewRadioLibrary;
+    if (data.canUploadRadioTracks !== undefined) updateData.canUploadRadioTracks = data.canUploadRadioTracks;
+    if (data.canDeleteRadioTracks !== undefined) updateData.canDeleteRadioTracks = data.canDeleteRadioTracks;
+    if (data.canManageRadioPlaylists !== undefined) updateData.canManageRadioPlaylists = data.canManageRadioPlaylists;
+    if (data.canManageRadioSchedules !== undefined) updateData.canManageRadioSchedules = data.canManageRadioSchedules;
+    if (data.canManageRadioIntervals !== undefined) updateData.canManageRadioIntervals = data.canManageRadioIntervals;
+    if (data.canManageRadioSettings !== undefined) updateData.canManageRadioSettings = data.canManageRadioSettings;
+    if (data.canViewRadioAudit !== undefined) updateData.canViewRadioAudit = data.canViewRadioAudit;
     if (data.maxDevices !== undefined) updateData.maxDevices = data.maxDevices;
     if (data.notes !== undefined) updateData.notes = data.notes || null;
 

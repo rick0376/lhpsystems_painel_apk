@@ -64,7 +64,7 @@ export default function NewProjectPage() {
     }
 
     if (!appKey) {
-      setAppKey(slugify(value).replaceAll("-", "_").toUpperCase());
+      setAppKey(slugify(value).replaceAll("-", "_"));
     }
   }
 
@@ -154,7 +154,7 @@ export default function NewProjectPage() {
               className={styles.input}
               placeholder="ex: LHP_PROJECTION_CENTER"
               value={appKey}
-              onChange={(event) => setAppKey(event.target.value.toUpperCase())}
+              onChange={(event) => setAppKey(event.target.value)}
             />
           </label>
 

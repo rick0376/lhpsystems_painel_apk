@@ -155,7 +155,7 @@ export function EditProjectForm({ project }: EditProjectFormProps) {
             type="text"
             placeholder="Ex: LHP_PROJECTION_CENTER"
             value={appKey}
-            onChange={(event) => setAppKey(event.target.value.toUpperCase())}
+            onChange={(event) => setAppKey(event.target.value)}
           />
         </label>
 

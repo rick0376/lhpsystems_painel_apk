@@ -1,249 +1,124 @@
 // src/app/(private)/apk-users/[id]/edit/EditApkUserForm.tsx
-
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PasswordInput } from "../../../../../components/ui/PasswordInput/PasswordInput";
 import styles from "./styles.module.scss";
 
-type ProjectOption = {
-  id: string;
-  name: string;
-};
-
+type ProjectOption = { id: string; name: string };
 type EditableApkUser = {
-  id: string;
-  projectId: string;
-  name: string;
-  username: string;
-  active: boolean;
-  expiresAt: string;
-  canTransmit: boolean;
-  canOpenSettings: boolean;
-  canEditRadioConfig: boolean;
-  maxDevices: number;
-  notes: string;
+  id: string; projectId: string; name: string; username: string; active: boolean; expiresAt: string;
+  canTransmit: boolean; canOpenSettings: boolean; canEditRadioConfig: boolean;
+  canAccessRadioManager: boolean;
+  canViewRadioDashboard: boolean;
+  canManageAutoDj: boolean;
+  canViewRadioLibrary: boolean;
+  canUploadRadioTracks: boolean;
+  canDeleteRadioTracks: boolean;
+  canManageRadioPlaylists: boolean;
+  canManageRadioSchedules: boolean;
+  canManageRadioIntervals: boolean;
+  canManageRadioSettings: boolean;
+  canViewRadioAudit: boolean;
+  maxDevices: number; notes: string;
 };
-
-type EditApkUserFormProps = {
-  user: EditableApkUser;
-  projects: ProjectOption[];
-};
+type EditApkUserFormProps = { user: EditableApkUser; projects: ProjectOption[] };
 
 export function EditApkUserForm({ user, projects }: EditApkUserFormProps) {
   const router = useRouter();
-
-  const [projectId, setProjectId] = useState(user.projectId);
-  const [name, setName] = useState(user.name);
-  const [username, setUsername] = useState(user.username);
-  const [password, setPassword] = useState("");
-  const [active, setActive] = useState(user.active);
-  const [expiresAt, setExpiresAt] = useState(user.expiresAt);
-  const [canTransmit, setCanTransmit] = useState(user.canTransmit);
-  const [canOpenSettings, setCanOpenSettings] = useState(user.canOpenSettings);
-  const [canEditRadioConfig, setCanEditRadioConfig] = useState(
-    user.canEditRadioConfig,
-  );
-  const [maxDevices, setMaxDevices] = useState(user.maxDevices);
-  const [notes, setNotes] = useState(user.notes);
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [projectId,setProjectId]=useState(user.projectId); const [name,setName]=useState(user.name); const [username,setUsername]=useState(user.username); const [password,setPassword]=useState("");
+  const [active,setActive]=useState(user.active); const [expiresAt,setExpiresAt]=useState(user.expiresAt);
+  const [canTransmit,setCanTransmit]=useState(user.canTransmit); const [canOpenSettings,setCanOpenSettings]=useState(user.canOpenSettings); const [canEditRadioConfig,setCanEditRadioConfig]=useState(user.canEditRadioConfig);
+  const [canAccessRadioManager, setCanAccessRadioManager] = useState(user.canAccessRadioManager);
+  const [canViewRadioDashboard, setCanViewRadioDashboard] = useState(user.canViewRadioDashboard);
+  const [canManageAutoDj, setCanManageAutoDj] = useState(user.canManageAutoDj);
+  const [canViewRadioLibrary, setCanViewRadioLibrary] = useState(user.canViewRadioLibrary);
+  const [canUploadRadioTracks, setCanUploadRadioTracks] = useState(user.canUploadRadioTracks);
+  const [canDeleteRadioTracks, setCanDeleteRadioTracks] = useState(user.canDeleteRadioTracks);
+  const [canManageRadioPlaylists, setCanManageRadioPlaylists] = useState(user.canManageRadioPlaylists);
+  const [canManageRadioSchedules, setCanManageRadioSchedules] = useState(user.canManageRadioSchedules);
+  const [canManageRadioIntervals, setCanManageRadioIntervals] = useState(user.canManageRadioIntervals);
+  const [canManageRadioSettings, setCanManageRadioSettings] = useState(user.canManageRadioSettings);
+  const [canViewRadioAudit, setCanViewRadioAudit] = useState(user.canViewRadioAudit);
+  const [maxDevices,setMaxDevices]=useState(user.maxDevices); const [notes,setNotes]=useState(user.notes); const [loading,setLoading]=useState(false); const [error,setError]=useState("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    setLoading(true);
-    setError("");
-
+    event.preventDefault(); setLoading(true); setError("");
     try {
-      const body: {
-        projectId: string;
-        name: string;
-        username: string;
-        active: boolean;
-        expiresAt: string;
-        canTransmit: boolean;
-        canOpenSettings: boolean;
-        canEditRadioConfig: boolean;
-        maxDevices: number;
-        notes: string;
-        password?: string;
-      } = {
-        projectId,
-        name,
-        username,
-        active,
-        expiresAt,
-        canTransmit,
-        canOpenSettings,
-        canEditRadioConfig,
-        maxDevices,
-        notes,
-      };
-
-      if (password.trim()) {
-        body.password = password;
-      }
-
-      const response = await fetch(`/api/apk-users/${user.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data?.error || "Não foi possível editar o usuário.");
-        return;
-      }
-
-      router.push(`/apk-users/${user.id}`);
-      router.refresh();
-    } catch {
-      setError("Falha de conexão com o servidor.");
-    } finally {
-      setLoading(false);
-    }
+      const body: { projectId:string; name:string; username:string; active:boolean; expiresAt:string; canTransmit:boolean; canOpenSettings:boolean; canEditRadioConfig:boolean;
+        canAccessRadioManager: boolean;
+        canViewRadioDashboard: boolean;
+        canManageAutoDj: boolean;
+        canViewRadioLibrary: boolean;
+        canUploadRadioTracks: boolean;
+        canDeleteRadioTracks: boolean;
+        canManageRadioPlaylists: boolean;
+        canManageRadioSchedules: boolean;
+        canManageRadioIntervals: boolean;
+        canManageRadioSettings: boolean;
+        canViewRadioAudit: boolean;
+        maxDevices:number; notes:string; password?:string } = { projectId,name,username,active,expiresAt,canTransmit,canOpenSettings,canEditRadioConfig,
+        canAccessRadioManager,
+        canViewRadioDashboard,
+        canManageAutoDj,
+        canViewRadioLibrary,
+        canUploadRadioTracks,
+        canDeleteRadioTracks,
+        canManageRadioPlaylists,
+        canManageRadioSchedules,
+        canManageRadioIntervals,
+        canManageRadioSettings,
+        canViewRadioAudit,
+        maxDevices,notes };
+      if(password.trim()) body.password=password;
+      const response=await fetch(`/api/apk-users/${user.id}`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}); const data=await response.json();
+      if(!response.ok){setError(data?.error||"Não foi possível editar o usuário.");return;} router.push(`/apk-users/${user.id}`);router.refresh();
+    } catch {setError("Falha de conexão com o servidor.");} finally {setLoading(false);}
   }
 
-  return (
-    <form className={styles.form} onSubmit={handleSubmit}>
-      {error && <div className={styles.error}>{error}</div>}
+  return <form className={styles.form} onSubmit={handleSubmit}>
+    {error&&<div className={styles.error}>{error}</div>}
+    <div className={styles.grid}>
+      <label className={styles.label}>Projeto<select className={styles.input} value={projectId} onChange={e=>setProjectId(e.target.value)}>{projects.map(project=><option key={project.id} value={project.id}>{project.name}</option>)}</select></label>
+      <label className={styles.label}>Nome do usuário<input className={styles.input} value={name} onChange={e=>setName(e.target.value)}/></label>
+      <label className={styles.label}>Login<input className={styles.input} value={username} onChange={e=>setUsername(e.target.value)}/></label>
+      <PasswordInput label="Nova senha" placeholder="Deixe em branco para manter" value={password} onChange={setPassword} />
+      <label className={styles.label}>Expira em<input className={styles.input} type="date" value={expiresAt} onChange={e=>setExpiresAt(e.target.value)}/></label>
+      <label className={styles.label}>Máximo de dispositivos/navegadores<input className={styles.input} type="number" min={1} value={maxDevices} onChange={e=>setMaxDevices(Number(e.target.value))}/></label>
+    </div>
+    <h2 className={styles.sectionTitle}>Permissões gerais</h2>
+    <div className={styles.permissions}>
+      <label className={styles.checkbox}><input type="checkbox" checked={active} onChange={e=>setActive(e.target.checked)}/>Usuário ativo</label>
+      <label className={styles.checkbox}><input type="checkbox" checked={canTransmit} onChange={e=>setCanTransmit(e.target.checked)}/>Pode transmitir</label>
+      <label className={styles.checkbox}><input type="checkbox" checked={canOpenSettings} onChange={e=>setCanOpenSettings(e.target.checked)}/>Pode abrir configurações</label>
+      <label className={styles.checkbox}><input type="checkbox" checked={canEditRadioConfig} onChange={e=>setCanEditRadioConfig(e.target.checked)}/>Pode editar rádio</label>
+    </div>
+    <h2 className={styles.sectionTitle}>Permissões do LHP Radio Manager</h2>
+    <div className={styles.permissions}>
+        <label className={styles.checkbox}><input type="checkbox" checked={canAccessRadioManager} onChange={e=>setCanAccessRadioManager(e.target.checked)} />Acessar o Radio Manager</label>
 
-      <div className={styles.grid}>
-        <label className={styles.label}>
-          Projeto
-          <select
-            className={styles.input}
-            value={projectId}
-            onChange={(event) => setProjectId(event.target.value)}
-          >
-            {projects.map((project) => (
-              <option key={project.id} value={project.id}>
-                {project.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <label className={styles.checkbox}><input type="checkbox" checked={canViewRadioDashboard} onChange={e=>setCanViewRadioDashboard(e.target.checked)} />Ver painel e status da rádio</label>
 
-        <label className={styles.label}>
-          Nome do usuário
-          <input
-            className={styles.input}
-            type="text"
-            placeholder="Ex: Pastor Rodolfo"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-        </label>
+        <label className={styles.checkbox}><input type="checkbox" checked={canManageAutoDj} onChange={e=>setCanManageAutoDj(e.target.checked)} />Iniciar, parar e reiniciar AutoDJ</label>
 
-        <label className={styles.label}>
-          Login
-          <input
-            className={styles.input}
-            type="text"
-            placeholder="Ex: rodolfo"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-          />
-        </label>
+        <label className={styles.checkbox}><input type="checkbox" checked={canViewRadioLibrary} onChange={e=>setCanViewRadioLibrary(e.target.checked)} />Ver biblioteca e músicas</label>
 
-        <PasswordInput
-          label="Nova senha"
-          placeholder="Deixe vazio para manter a senha atual"
-          value={password}
-          onChange={setPassword}
-        />
+        <label className={styles.checkbox}><input type="checkbox" checked={canUploadRadioTracks} onChange={e=>setCanUploadRadioTracks(e.target.checked)} />Enviar e substituir músicas</label>
 
-        <label className={styles.label}>
-          Expira em
-          <input
-            className={styles.input}
-            type="date"
-            value={expiresAt}
-            onChange={(event) => setExpiresAt(event.target.value)}
-          />
-        </label>
+        <label className={styles.checkbox}><input type="checkbox" checked={canDeleteRadioTracks} onChange={e=>setCanDeleteRadioTracks(e.target.checked)} />Excluir músicas</label>
 
-        <label className={styles.label}>
-          Máximo de dispositivos
-          <input
-            className={styles.input}
-            type="number"
-            min={1}
-            value={maxDevices}
-            onChange={(event) => setMaxDevices(Number(event.target.value))}
-          />
-        </label>
-      </div>
+        <label className={styles.checkbox}><input type="checkbox" checked={canManageRadioPlaylists} onChange={e=>setCanManageRadioPlaylists(e.target.checked)} />Criar, editar e excluir playlists</label>
 
-      <div className={styles.permissions}>
-        <label className={styles.checkbox}>
-          <input
-            type="checkbox"
-            checked={active}
-            onChange={(event) => setActive(event.target.checked)}
-          />
-          Usuário ativo
-        </label>
+        <label className={styles.checkbox}><input type="checkbox" checked={canManageRadioSchedules} onChange={e=>setCanManageRadioSchedules(e.target.checked)} />Gerenciar programação agendada</label>
 
-        <label className={styles.checkbox}>
-          <input
-            type="checkbox"
-            checked={canTransmit}
-            onChange={(event) => setCanTransmit(event.target.checked)}
-          />
-          Pode transmitir
-        </label>
+        <label className={styles.checkbox}><input type="checkbox" checked={canManageRadioIntervals} onChange={e=>setCanManageRadioIntervals(e.target.checked)} />Gerenciar intervalos e vinhetas</label>
 
-        <label className={styles.checkbox}>
-          <input
-            type="checkbox"
-            checked={canOpenSettings}
-            onChange={(event) => setCanOpenSettings(event.target.checked)}
-          />
-          Pode abrir configurações
-        </label>
+        <label className={styles.checkbox}><input type="checkbox" checked={canManageRadioSettings} onChange={e=>setCanManageRadioSettings(e.target.checked)} />Alterar configurações da rádio</label>
 
-        <label className={styles.checkbox}>
-          <input
-            type="checkbox"
-            checked={canEditRadioConfig}
-            onChange={(event) => setCanEditRadioConfig(event.target.checked)}
-          />
-          Pode editar rádio
-        </label>
-      </div>
-
-      <label className={styles.label}>
-        Observações
-        <textarea
-          className={styles.textarea}
-          placeholder="Observações internas sobre este usuário"
-          value={notes}
-          onChange={(event) => setNotes(event.target.value)}
-        />
-      </label>
-
-      <div className={styles.actions}>
-        <Link href={`/apk-users/${user.id}`} className={styles.cancelButton}>
-          Cancelar
-        </Link>
-
-        <button
-          className={styles.submitButton}
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? "Salvando..." : "Salvar alterações"}
-        </button>
-      </div>
-    </form>
-  );
+        <label className={styles.checkbox}><input type="checkbox" checked={canViewRadioAudit} onChange={e=>setCanViewRadioAudit(e.target.checked)} />Ver histórico de alterações</label>
+    </div>
+    <label className={styles.label}>Observações<textarea className={styles.textarea} value={notes} onChange={e=>setNotes(e.target.value)}/></label>
+    <div className={styles.actions}><Link href={`/apk-users/${user.id}`} className={styles.cancelButton}>Cancelar</Link><button className={styles.submitButton} type="submit" disabled={loading}>{loading?"Salvando...":"Salvar alterações"}</button></div>
+  </form>;
 }

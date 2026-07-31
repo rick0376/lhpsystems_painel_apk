@@ -141,6 +141,23 @@ export default async function ApkUserDetailsPage({
         </div>
       </section>
 
+      <section className={styles.permissionsCard}>
+        <h2>Permissões do LHP Radio Manager</h2>
+        <div className={styles.permissionsGrid}>
+          <div className={styles.permissionItem}><span>Acessar o Radio Manager</span><strong>{apkUser.canAccessRadioManager ? "Liberado" : "Bloqueado"}</strong></div>
+          <div className={styles.permissionItem}><span>Ver painel e status da rádio</span><strong>{apkUser.canViewRadioDashboard ? "Liberado" : "Bloqueado"}</strong></div>
+          <div className={styles.permissionItem}><span>Iniciar, parar e reiniciar AutoDJ</span><strong>{apkUser.canManageAutoDj ? "Liberado" : "Bloqueado"}</strong></div>
+          <div className={styles.permissionItem}><span>Ver biblioteca e músicas</span><strong>{apkUser.canViewRadioLibrary ? "Liberado" : "Bloqueado"}</strong></div>
+          <div className={styles.permissionItem}><span>Enviar e substituir músicas</span><strong>{apkUser.canUploadRadioTracks ? "Liberado" : "Bloqueado"}</strong></div>
+          <div className={styles.permissionItem}><span>Excluir músicas</span><strong>{apkUser.canDeleteRadioTracks ? "Liberado" : "Bloqueado"}</strong></div>
+          <div className={styles.permissionItem}><span>Criar, editar e excluir playlists</span><strong>{apkUser.canManageRadioPlaylists ? "Liberado" : "Bloqueado"}</strong></div>
+          <div className={styles.permissionItem}><span>Gerenciar programação agendada</span><strong>{apkUser.canManageRadioSchedules ? "Liberado" : "Bloqueado"}</strong></div>
+          <div className={styles.permissionItem}><span>Gerenciar intervalos e vinhetas</span><strong>{apkUser.canManageRadioIntervals ? "Liberado" : "Bloqueado"}</strong></div>
+          <div className={styles.permissionItem}><span>Alterar configurações da rádio</span><strong>{apkUser.canManageRadioSettings ? "Liberado" : "Bloqueado"}</strong></div>
+          <div className={styles.permissionItem}><span>Ver histórico de alterações</span><strong>{apkUser.canViewRadioAudit ? "Liberado" : "Bloqueado"}</strong></div>
+        </div>
+      </section>
+
       <section className={styles.notesCard}>
         <span className={styles.label}>Observações</span>
 

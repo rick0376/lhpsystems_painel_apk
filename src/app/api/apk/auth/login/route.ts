@@ -62,8 +62,10 @@ const apkLoginSchema = z.object({
 export async function POST(request: Request) {
   try {
     const data = apkLoginSchema.parse(await request.json());
-    const project = await prisma.appProject.findUnique({
-      where: { appKey: data.appKey },
+    const project = await prisma.appProject.findFirst({
+      where: {
+        appKey: { equals: data.appKey.trim(), mode: "insensitive" },
+      },
     });
 
     if (!project || !project.active) {
@@ -158,6 +160,17 @@ export async function POST(request: Request) {
           canTransmit: apkUser.canTransmit,
           canOpenSettings: apkUser.canOpenSettings,
           canEditRadioConfig: false,
+          canAccessRadioManager: apkUser.canAccessRadioManager,
+          canViewRadioDashboard: apkUser.canViewRadioDashboard,
+          canManageAutoDj: apkUser.canManageAutoDj,
+          canViewRadioLibrary: apkUser.canViewRadioLibrary,
+          canUploadRadioTracks: apkUser.canUploadRadioTracks,
+          canDeleteRadioTracks: apkUser.canDeleteRadioTracks,
+          canManageRadioPlaylists: apkUser.canManageRadioPlaylists,
+          canManageRadioSchedules: apkUser.canManageRadioSchedules,
+          canManageRadioIntervals: apkUser.canManageRadioIntervals,
+          canManageRadioSettings: apkUser.canManageRadioSettings,
+          canViewRadioAudit: apkUser.canViewRadioAudit,
           maxDevices: apkUser.maxDevices,
         },
         project: {
