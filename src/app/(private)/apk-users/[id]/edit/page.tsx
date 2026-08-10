@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
 import { AdminShell } from "../../../../../components/layout/AdminShell/AdminShell";
 import { getAdminSession } from "../../../../../lib/auth/session";
 import { prisma } from "../../../../../lib/prisma";
 import { EditApkUserForm } from "./EditApkUserForm";
+
 import styles from "./styles.module.scss";
 
 type EditApkUserPageProps = {
@@ -29,6 +31,7 @@ export default async function EditApkUserPage({
     where: {
       id,
     },
+
     select: {
       id: true,
       projectId: true,
@@ -36,25 +39,42 @@ export default async function EditApkUserPage({
       username: true,
       active: true,
       expiresAt: true,
-      canTransmit: true,
-      canOpenSettings: true,
-      canEditRadioConfig: true,
-      canAccessRadioManager: true,
-      canViewRadioDashboard: true,
-      canManageAutoDj: true,
-      canViewRadioLibrary: true,
-      canUploadRadioTracks: true,
-      canDeleteRadioTracks: true,
-      canManageRadioPlaylists: true,
-      canManageRadioSchedules: true,
-      canManageRadioIntervals: true,
-      canManageRadioSettings: true,
-      canViewRadioAudit: true,
       maxDevices: true,
       notes: true,
+
       project: {
         select: {
+          id: true,
           name: true,
+
+          permissions: {
+            where: {
+              active: true,
+            },
+
+            orderBy: {
+              name: "asc",
+            },
+
+            select: {
+              id: true,
+              name: true,
+              key: true,
+              description: true,
+
+              userPermissions: {
+                where: {
+                  apkUserId: id,
+                },
+
+                select: {
+                  allowed: true,
+                },
+
+                take: 1,
+              },
+            },
+          },
         },
       },
     },
@@ -75,61 +95,76 @@ export default async function EditApkUserPage({
         },
       ],
     },
+
     select: {
       id: true,
       name: true,
     },
+
     orderBy: {
       name: "asc",
     },
   });
 
+  const permissions = apkUser.project.permissions.map((permission) => ({
+    id: permission.id,
+    name: permission.name,
+    key: permission.key,
+    description: permission.description,
+
+    allowed:
+      permission.userPermissions[0]?.allowed ??
+      false,
+  }));
+
   return (
     <AdminShell>
       <section className={styles.header}>
         <div>
-          <span className={styles.badge}>Editar usuário</span>
+          <span className={styles.badge}>
+            Editar usuário
+          </span>
 
-          <h1 className={styles.title}>{apkUser.name}</h1>
+          <h1 className={styles.title}>
+            {apkUser.name}
+          </h1>
 
           <p className={styles.subtitle}>
-            Altere os dados de acesso, permissões, expiração e dispositivos do
-            usuário.
+            Altere os dados de acesso, validade,
+            dispositivos e permissões específicas
+            deste aplicativo.
           </p>
         </div>
 
-        <Link href={`/apk-users/${apkUser.id}`} className={styles.backButton}>
+        <Link
+          href={`/apk-users/${apkUser.id}`}
+          className={styles.backButton}
+        >
           Voltar
         </Link>
       </section>
 
       <EditApkUserForm
         projects={projects}
+        permissions={permissions}
+        projectName={apkUser.project.name}
         user={{
           id: apkUser.id,
           projectId: apkUser.projectId,
           name: apkUser.name,
           username: apkUser.username,
           active: apkUser.active,
+
           expiresAt: apkUser.expiresAt
-            ? apkUser.expiresAt.toISOString().slice(0, 10)
+            ? apkUser.expiresAt
+              .toISOString()
+              .slice(0, 10)
             : "",
-          canTransmit: apkUser.canTransmit,
-          canOpenSettings: apkUser.canOpenSettings,
-          canEditRadioConfig: apkUser.canEditRadioConfig,
-          canAccessRadioManager: apkUser.canAccessRadioManager,
-          canViewRadioDashboard: apkUser.canViewRadioDashboard,
-          canManageAutoDj: apkUser.canManageAutoDj,
-          canViewRadioLibrary: apkUser.canViewRadioLibrary,
-          canUploadRadioTracks: apkUser.canUploadRadioTracks,
-          canDeleteRadioTracks: apkUser.canDeleteRadioTracks,
-          canManageRadioPlaylists: apkUser.canManageRadioPlaylists,
-          canManageRadioSchedules: apkUser.canManageRadioSchedules,
-          canManageRadioIntervals: apkUser.canManageRadioIntervals,
-          canManageRadioSettings: apkUser.canManageRadioSettings,
-          canViewRadioAudit: apkUser.canViewRadioAudit,
+
           maxDevices: apkUser.maxDevices,
-          notes: apkUser.notes || "",
+
+          notes:
+            apkUser.notes || "",
         }}
       />
     </AdminShell>

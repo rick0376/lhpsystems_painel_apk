@@ -205,6 +205,37 @@
   font-weight: 800;
 }
 
+.permissionsEmpty {
+  padding: 22px;
+
+  border: 1px dashed #2a3142;
+  border-radius: 16px;
+
+  color: #9ca3af;
+  background: #0d121d;
+
+  font-size: 13px;
+  text-align: center;
+}
+
+.checkbox span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.checkbox strong {
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.checkbox small {
+  color: #8f98a8;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
 @media (max-width: 760px) {
   .header {
     flex-direction: column;
@@ -222,6 +253,7 @@
   .backButton {
     width: 100%;
   }
+
   .form {
     padding: 20px;
     border-radius: 22px;

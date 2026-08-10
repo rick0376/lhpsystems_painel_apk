@@ -3,16 +3,26 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Pencil, Plus, Radio } from "lucide-react";
+
 import { AdminShell } from "../../../../components/layout/AdminShell/AdminShell";
 import { DeleteProjectButton } from "../../../../components/projects/DeleteProjectButton/DeleteProjectButton";
 import { getAdminSession } from "../../../../lib/auth/session";
 import { prisma } from "../../../../lib/prisma";
+
 import styles from "./styles.module.scss";
 
 type ProjectApkUser = {
   id: string;
   name: string;
   username: string;
+  active: boolean;
+};
+
+type ProjectPermission = {
+  id: string;
+  name: string;
+  key: string;
+  description: string | null;
   active: boolean;
 };
 
@@ -26,12 +36,19 @@ type ProjectDetails = {
   supportWhatsappNumber: string | null;
   supportWhatsappMessage: string | null;
   active: boolean;
+
   apkUsers: ProjectApkUser[];
-  _count: { apkUsers: number };
+  permissions: ProjectPermission[];
+
+  _count: {
+    apkUsers: number;
+  };
 };
 
 type ProjectDetailsPageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{
+    id: string;
+  }>;
 };
 
 export default async function ProjectDetailsPage({
@@ -46,10 +63,16 @@ export default async function ProjectDetailsPage({
   const { id } = await params;
 
   const project = (await prisma.appProject.findUnique({
-    where: { id },
+    where: {
+      id,
+    },
+
     include: {
       apkUsers: {
-        orderBy: { createdAt: "desc" },
+        orderBy: {
+          createdAt: "desc",
+        },
+
         select: {
           id: true,
           name: true,
@@ -57,8 +80,25 @@ export default async function ProjectDetailsPage({
           active: true,
         },
       },
+
+      permissions: {
+        orderBy: {
+          name: "asc",
+        },
+
+        select: {
+          id: true,
+          name: true,
+          key: true,
+          description: true,
+          active: true,
+        },
+      },
+
       _count: {
-        select: { apkUsers: true },
+        select: {
+          apkUsers: true,
+        },
       },
     },
   })) as ProjectDetails | null;
@@ -72,7 +112,9 @@ export default async function ProjectDetailsPage({
       <section className={styles.header}>
         <div className={styles.headerContent}>
           <span className={styles.badge}>Projeto APK</span>
+
           <h1 className={styles.title}>{project.name}</h1>
+
           <p className={styles.subtitle}>
             Gerencie os dados, usuários e permissões deste aplicativo.
           </p>
@@ -100,7 +142,10 @@ export default async function ProjectDetailsPage({
             Editar
           </Link>
 
-          <Link href="/projects" className={styles.backButton}>
+          <Link
+            href="/projects"
+            className={styles.backButton}
+          >
             Voltar
           </Link>
         </div>
@@ -124,37 +169,133 @@ export default async function ProjectDetailsPage({
 
         <div className={styles.card}>
           <span className={styles.label}>Status</span>
-          <span className={project.active ? styles.active : styles.inactive}>
-            {project.active ? "Ativo" : "Bloqueado"}
+
+          <span
+            className={
+              project.active
+                ? styles.active
+                : styles.inactive
+            }
+          >
+            {project.active
+              ? "Ativo"
+              : "Bloqueado"}
           </span>
         </div>
 
         <div className={styles.card}>
-          <span className={styles.label}>WhatsApp suporte</span>
-          <strong>{project.supportWhatsappLabel || "(12) 991890682"}</strong>
+          <span className={styles.label}>
+            WhatsApp suporte
+          </span>
+
+          <strong>
+            {project.supportWhatsappLabel ||
+              "(12) 99189-0682"}
+          </strong>
         </div>
       </section>
 
       <section className={styles.descriptionCard}>
-        <span className={styles.label}>Descrição</span>
-        <p>{project.description || "Nenhuma descrição cadastrada."}</p>
+        <span className={styles.label}>
+          Descrição
+        </span>
+
+        <p>
+          {project.description ||
+            "Nenhuma descrição cadastrada."}
+        </p>
       </section>
 
       <section className={styles.descriptionCard}>
-        <span className={styles.label}>Mensagem de suporte</span>
+        <span className={styles.label}>
+          Mensagem de suporte
+        </span>
+
         <p>
           {project.supportWhatsappMessage ||
-            "Olá, minha licença do LHP Projection Center expirou. Pode me ajudar?"}
+            "Olá, preciso de ajuda com meu acesso ao aplicativo."}
         </p>
+      </section>
+
+      <section className={styles.permissionsCard}>
+        <div className={styles.permissionsHeader}>
+          <div>
+            <h2>Permissões deste APK</h2>
+
+            <p>
+              Defina as permissões específicas de{" "}
+              <strong>{project.name}</strong>.
+            </p>
+          </div>
+
+          <Link
+            href={`/projects/${project.id}/permissions`}
+            className={styles.primaryButton}
+          >
+            <Plus size={18} strokeWidth={2.4} />
+            Gerenciar permissões
+          </Link>
+        </div>
+
+        {project.permissions.length === 0 ? (
+          <div className={styles.emptyPermissions}>
+            Este aplicativo ainda não possui
+            permissões específicas cadastradas.
+          </div>
+        ) : (
+          <div className={styles.permissionsGrid}>
+            {project.permissions.map(
+              (permission) => (
+                <div
+                  key={permission.id}
+                  className={styles.permissionItem}
+                >
+                  <div>
+                    <strong>
+                      {permission.name}
+                    </strong>
+
+                    <code>
+                      {permission.key}
+                    </code>
+
+                    {permission.description && (
+                      <p>
+                        {
+                          permission.description
+                        }
+                      </p>
+                    )}
+                  </div>
+
+                  <span
+                    className={
+                      permission.active
+                        ? styles.active
+                        : styles.inactive
+                    }
+                  >
+                    {permission.active
+                      ? "Ativa"
+                      : "Inativa"}
+                  </span>
+                </div>
+              ),
+            )}
+          </div>
+        )}
       </section>
 
       <section className={styles.usersCard}>
         <div className={styles.usersHeader}>
           <div>
             <h2>Usuários deste APK</h2>
+
             <p>
               Este projeto possui{" "}
-              <strong>{project._count.apkUsers} usuário(s)</strong>{" "}
+              <strong>
+                {project._count.apkUsers} usuário(s)
+              </strong>{" "}
               cadastrado(s).
             </p>
           </div>
@@ -170,26 +311,37 @@ export default async function ProjectDetailsPage({
 
         {project.apkUsers.length === 0 ? (
           <div className={styles.emptyUsers}>
-            Nenhum usuário cadastrado neste projeto.
+            Nenhum usuário cadastrado neste
+            projeto.
           </div>
         ) : (
           <div className={styles.usersList}>
-            {project.apkUsers.map((user: ProjectApkUser) => (
-              <Link
-                key={user.id}
-                href={`/apk-users/${user.id}`}
-                className={styles.userRow}
-              >
-                <div>
-                  <strong>{user.name}</strong>
-                  <small>{user.username}</small>
-                </div>
+            {project.apkUsers.map(
+              (user: ProjectApkUser) => (
+                <Link
+                  key={user.id}
+                  href={`/apk-users/${user.id}`}
+                  className={styles.userRow}
+                >
+                  <div>
+                    <strong>{user.name}</strong>
+                    <small>{user.username}</small>
+                  </div>
 
-                <span className={user.active ? styles.active : styles.inactive}>
-                  {user.active ? "Ativo" : "Bloqueado"}
-                </span>
-              </Link>
-            ))}
+                  <span
+                    className={
+                      user.active
+                        ? styles.active
+                        : styles.inactive
+                    }
+                  >
+                    {user.active
+                      ? "Ativo"
+                      : "Bloqueado"}
+                  </span>
+                </Link>
+              ),
+            )}
           </div>
         )}
       </section>

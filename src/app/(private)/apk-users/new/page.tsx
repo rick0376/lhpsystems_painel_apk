@@ -1,10 +1,12 @@
 // src/app/(private)/apk-users/new/page.tsx
 
 import { redirect } from "next/navigation";
+
 import { AdminShell } from "../../../../components/layout/AdminShell/AdminShell";
 import { getAdminSession } from "../../../../lib/auth/session";
 import { prisma } from "../../../../lib/prisma";
 import { NewApkUserForm } from "./NewApkUserForm";
+
 import styles from "./styles.module.scss";
 
 type NewApkUserPageProps = {
@@ -28,27 +30,63 @@ export default async function NewApkUserPage({
     where: {
       active: true,
     },
+
     orderBy: {
       name: "asc",
     },
+
+    select: {
+      id: true,
+      name: true,
+
+      permissions: {
+        where: {
+          active: true,
+        },
+
+        orderBy: {
+          name: "asc",
+        },
+
+        select: {
+          id: true,
+          name: true,
+          key: true,
+          description: true,
+        },
+      },
+    },
   });
+
+  const validInitialProjectId = projects.some(
+    (project) => project.id === projectId,
+  )
+    ? projectId
+    : undefined;
 
   return (
     <AdminShell>
       <section className={styles.header}>
         <div>
-          <span className={styles.badge}>Novo acesso</span>
+          <span className={styles.badge}>
+            Novo acesso
+          </span>
 
-          <h1 className={styles.title}>Cadastrar usuário APK</h1>
+          <h1 className={styles.title}>
+            Cadastrar usuário APK
+          </h1>
 
           <p className={styles.subtitle}>
-            Crie um login para liberar acesso ao aplicativo, controlar prazo,
-            permissões e dispositivos.
+            Crie um login para liberar acesso ao aplicativo,
+            controlar prazo, permissões e dispositivos.
           </p>
         </div>
       </section>
 
-      <NewApkUserForm projects={projects} initialProjectId={projectId} />
+      <NewApkUserForm
+        projects={projects}
+        initialProjectId={validInitialProjectId}
+      />
     </AdminShell>
   );
 }

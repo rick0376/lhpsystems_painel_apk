@@ -1,3 +1,5 @@
+// prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -37,6 +39,7 @@ model AppProject {
   active Boolean @default(true)
 
   apkUsers    ApkUser[]
+  permissions AppPermission[]
   radioConfig RadioStreamConfig?
 
   createdAt DateTime @default(now())
@@ -86,23 +89,25 @@ model ApkUser {
   canEditRadioConfig Boolean @default(true)
 
   // Permissões do LHP Radio Manager
-  canAccessRadioManager     Boolean @default(false)
-  canViewRadioDashboard     Boolean @default(false)
-  canManageAutoDj           Boolean @default(false)
-  canViewRadioLibrary       Boolean @default(false)
-  canUploadRadioTracks      Boolean @default(false)
-  canDeleteRadioTracks      Boolean @default(false)
-  canManageRadioPlaylists   Boolean @default(false)
-  canManageRadioSchedules   Boolean @default(false)
-  canManageRadioIntervals   Boolean @default(false)
-  canManageRadioSettings    Boolean @default(false)
-  canViewRadioAudit         Boolean @default(false)
+  canAccessRadioManager   Boolean @default(false)
+  canViewRadioDashboard   Boolean @default(false)
+  canManageAutoDj         Boolean @default(false)
+  canViewRadioLibrary     Boolean @default(false)
+  canUploadRadioTracks    Boolean @default(false)
+  canDeleteRadioTracks    Boolean @default(false)
+  canManageRadioPlaylists Boolean @default(false)
+  canManageRadioSchedules Boolean @default(false)
+  canManageRadioIntervals Boolean @default(false)
+  canManageRadioSettings  Boolean @default(false)
+  canViewRadioAudit       Boolean @default(false)
 
   maxDevices Int @default(1)
 
   notes String?
 
   devices Device[]
+
+  permissions ApkUserPermission[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -127,4 +132,43 @@ model Device {
   updatedAt DateTime @updatedAt
 
   @@unique([apkUserId, deviceId])
+}
+
+model AppPermission {
+  id String @id @default(cuid())
+
+  projectId String
+  project   AppProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  name        String
+  key         String
+  description String?
+  active      Boolean @default(true)
+
+  userPermissions ApkUserPermission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, key])
+  @@index([projectId])
+}
+
+model ApkUserPermission {
+  id String @id @default(cuid())
+
+  apkUserId    String
+  permissionId String
+
+  apkUser    ApkUser       @relation(fields: [apkUserId], references: [id], onDelete: Cascade)
+  permission AppPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  allowed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([apkUserId, permissionId])
+  @@index([apkUserId])
+  @@index([permissionId])
 }
