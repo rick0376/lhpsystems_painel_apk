@@ -10,8 +10,8 @@ import styles from "./styles.module.scss";
 export default function LoginPage() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("rickapk0376@lhp.com");
+  const [password, setPassword] = useState("rick0376apk");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
