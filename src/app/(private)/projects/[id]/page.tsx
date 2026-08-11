@@ -2,7 +2,18 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Pencil, Plus, Radio } from "lucide-react";
+import {
+  ArrowLeft,
+  AppWindow,
+  CheckCircle2,
+  KeyRound,
+  MessageCircle,
+  Pencil,
+  Plus,
+  Radio,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 
 import { AdminShell } from "../../../../components/layout/AdminShell/AdminShell";
 import { DeleteProjectButton } from "../../../../components/projects/DeleteProjectButton/DeleteProjectButton";
@@ -107,30 +118,71 @@ export default async function ProjectDetailsPage({
     redirect("/projects");
   }
 
+  const activePermissions = project.permissions.filter(
+    (permission) => permission.active,
+  ).length;
+
+  const activeUsers = project.apkUsers.filter(
+    (user) => user.active,
+  ).length;
+
   return (
     <AdminShell>
-      <section className={styles.header}>
-        <div className={styles.headerContent}>
-          <span className={styles.badge}>Projeto APK</span>
+      <section className={styles.hero}>
+        <div className={styles.heroMain}>
+          <div className={styles.projectIcon}>
+            <AppWindow size={27} strokeWidth={2} />
+          </div>
 
-          <h1 className={styles.title}>{project.name}</h1>
+          <div className={styles.heroContent}>
+            <div className={styles.heroTop}>
+              <span className={styles.badge}>
+                Projeto APK
+              </span>
 
-          <p className={styles.subtitle}>
-            Gerencie os dados, usuários e permissões deste aplicativo.
-          </p>
+              <span
+                className={
+                  project.active
+                    ? styles.heroActive
+                    : styles.heroInactive
+                }
+              >
+                <i />
+                {project.active
+                  ? "Projeto ativo"
+                  : "Projeto bloqueado"}
+              </span>
+            </div>
+
+            <h1 className={styles.title}>
+              {project.name}
+            </h1>
+
+            <p className={styles.subtitle}>
+              Gerencie configurações, usuários,
+              permissões e dados deste aplicativo.
+            </p>
+
+            <div className={styles.projectMeta}>
+              <span>
+                <strong>Slug</strong>
+                {project.slug}
+              </span>
+
+              <span>
+                <strong>App Key</strong>
+                {project.appKey}
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className={styles.headerActions}>
-          <DeleteProjectButton
-            projectId={project.id}
-            projectName={project.name}
-          />
-
           <Link
             href={`/projects/${project.id}/radio`}
             className={styles.radioButton}
           >
-            <Radio size={18} strokeWidth={2.4} />
+            <Radio size={17} strokeWidth={2.3} />
             Configurar rádio
           </Link>
 
@@ -138,7 +190,7 @@ export default async function ProjectDetailsPage({
             href={`/projects/${project.id}/edit`}
             className={styles.editButton}
           >
-            <Pencil size={18} strokeWidth={2.4} />
+            <Pencil size={17} strokeWidth={2.3} />
             Editar
           </Link>
 
@@ -146,101 +198,192 @@ export default async function ProjectDetailsPage({
             href="/projects"
             className={styles.backButton}
           >
+            <ArrowLeft size={17} strokeWidth={2.3} />
             Voltar
           </Link>
+
+          <div className={styles.deleteAction}>
+            <DeleteProjectButton
+              projectId={project.id}
+              projectName={project.name}
+            />
+          </div>
         </div>
       </section>
 
-      <section className={styles.grid}>
-        <div className={styles.card}>
-          <span className={styles.label}>Nome</span>
-          <strong>{project.name}</strong>
-        </div>
+      <section className={styles.statsGrid}>
+        <div className={styles.statCard}>
+          <div className={styles.statIcon}>
+            <Users size={20} />
+          </div>
 
-        <div className={styles.card}>
-          <span className={styles.label}>Slug</span>
-          <strong>{project.slug}</strong>
-        </div>
-
-        <div className={styles.card}>
-          <span className={styles.label}>App Key</span>
-          <code>{project.appKey}</code>
-        </div>
-
-        <div className={styles.card}>
-          <span className={styles.label}>Status</span>
-
-          <span
-            className={
-              project.active
-                ? styles.active
-                : styles.inactive
-            }
-          >
-            {project.active
-              ? "Ativo"
-              : "Bloqueado"}
-          </span>
-        </div>
-
-        <div className={styles.card}>
-          <span className={styles.label}>
-            WhatsApp suporte
-          </span>
-
-          <strong>
-            {project.supportWhatsappLabel ||
-              "(12) 99189-0682"}
-          </strong>
-        </div>
-      </section>
-
-      <section className={styles.descriptionCard}>
-        <span className={styles.label}>
-          Descrição
-        </span>
-
-        <p>
-          {project.description ||
-            "Nenhuma descrição cadastrada."}
-        </p>
-      </section>
-
-      <section className={styles.descriptionCard}>
-        <span className={styles.label}>
-          Mensagem de suporte
-        </span>
-
-        <p>
-          {project.supportWhatsappMessage ||
-            "Olá, preciso de ajuda com meu acesso ao aplicativo."}
-        </p>
-      </section>
-
-      <section className={styles.permissionsCard}>
-        <div className={styles.permissionsHeader}>
           <div>
-            <h2>Permissões deste APK</h2>
+            <span>Usuários</span>
+            <strong>
+              {project._count.apkUsers}
+            </strong>
+            <small>
+              {activeUsers} ativo(s)
+            </small>
+          </div>
+        </div>
 
-            <p>
-              Defina as permissões específicas de{" "}
-              <strong>{project.name}</strong>.
-            </p>
+        <div className={styles.statCard}>
+          <div
+            className={`${styles.statIcon} ${styles.permissionIcon}`}
+          >
+            <ShieldCheck size={20} />
+          </div>
+
+          <div>
+            <span>Permissões</span>
+            <strong>
+              {project.permissions.length}
+            </strong>
+            <small>
+              {activePermissions} ativa(s)
+            </small>
+          </div>
+        </div>
+
+        <div className={styles.statCard}>
+          <div
+            className={`${styles.statIcon} ${styles.keyIcon}`}
+          >
+            <KeyRound size={20} />
+          </div>
+
+          <div className={styles.statText}>
+            <span>App Key</span>
+
+            <code>{project.appKey}</code>
+          </div>
+        </div>
+
+        <div className={styles.statCard}>
+          <div
+            className={`${styles.statIcon} ${styles.statusIcon}`}
+          >
+            <CheckCircle2 size={20} />
+          </div>
+
+          <div>
+            <span>Status</span>
+
+            <strong className={styles.statusText}>
+              {project.active
+                ? "Ativo"
+                : "Bloqueado"}
+            </strong>
+
+            <small>
+              Acesso geral do projeto
+            </small>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.infoGrid}>
+        <div className={styles.infoCard}>
+          <div className={styles.infoHeader}>
+            <div className={styles.infoIcon}>
+              <AppWindow size={19} />
+            </div>
+
+            <div>
+              <span>Informações</span>
+              <h2>Descrição do aplicativo</h2>
+            </div>
+          </div>
+
+          <p>
+            {project.description ||
+              "Nenhuma descrição cadastrada."}
+          </p>
+        </div>
+
+        <div className={styles.infoCard}>
+          <div className={styles.infoHeader}>
+            <div
+              className={`${styles.infoIcon} ${styles.whatsappIcon}`}
+            >
+              <MessageCircle size={19} />
+            </div>
+
+            <div>
+              <span>Atendimento</span>
+              <h2>Suporte ao usuário</h2>
+            </div>
+          </div>
+
+          <div className={styles.supportDetails}>
+            <div>
+              <small>WhatsApp</small>
+
+              <strong>
+                {project.supportWhatsappLabel ||
+                  project.supportWhatsappNumber ||
+                  "(12) 99189-0682"}
+              </strong>
+            </div>
+
+            <div>
+              <small>Mensagem padrão</small>
+
+              <p>
+                {project.supportWhatsappMessage ||
+                  "Olá, preciso de ajuda com meu acesso ao aplicativo."}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionHeading}>
+            <div className={styles.sectionIcon}>
+              <ShieldCheck size={21} />
+            </div>
+
+            <div>
+              <span className={styles.eyebrow}>
+                Controle de acesso
+              </span>
+
+              <h2>Permissões deste APK</h2>
+
+              <p>
+                Configure os recursos disponíveis
+                especificamente para{" "}
+                <strong>{project.name}</strong>.
+              </p>
+            </div>
           </div>
 
           <Link
             href={`/projects/${project.id}/permissions`}
             className={styles.primaryButton}
           >
-            <Plus size={18} strokeWidth={2.4} />
+            <Plus size={17} strokeWidth={2.5} />
             Gerenciar permissões
           </Link>
         </div>
 
         {project.permissions.length === 0 ? (
-          <div className={styles.emptyPermissions}>
-            Este aplicativo ainda não possui
-            permissões específicas cadastradas.
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>
+              <ShieldCheck size={23} />
+            </div>
+
+            <strong>
+              Nenhuma permissão cadastrada
+            </strong>
+
+            <p>
+              Crie permissões específicas para
+              controlar os recursos deste aplicativo.
+            </p>
           </div>
         ) : (
           <div className={styles.permissionsGrid}>
@@ -250,22 +393,34 @@ export default async function ProjectDetailsPage({
                   key={permission.id}
                   className={styles.permissionItem}
                 >
-                  <div>
-                    <strong>
-                      {permission.name}
-                    </strong>
+                  <div
+                    className={
+                      styles.permissionMain
+                    }
+                  >
+                    <div
+                      className={
+                        styles.permissionIconSmall
+                      }
+                    >
+                      <ShieldCheck size={17} />
+                    </div>
 
-                    <code>
-                      {permission.key}
-                    </code>
+                    <div>
+                      <strong>
+                        {permission.name}
+                      </strong>
 
-                    {permission.description && (
-                      <p>
-                        {
-                          permission.description
-                        }
-                      </p>
-                    )}
+                      <code>
+                        {permission.key}
+                      </code>
+
+                      {permission.description && (
+                        <p>
+                          {permission.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   <span
@@ -275,6 +430,8 @@ export default async function ProjectDetailsPage({
                         : styles.inactive
                     }
                   >
+                    <i />
+
                     {permission.active
                       ? "Ativa"
                       : "Inativa"}
@@ -286,33 +443,56 @@ export default async function ProjectDetailsPage({
         )}
       </section>
 
-      <section className={styles.usersCard}>
-        <div className={styles.usersHeader}>
-          <div>
-            <h2>Usuários deste APK</h2>
+      <section className={styles.sectionCard}>
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionHeading}>
+            <div
+              className={`${styles.sectionIcon} ${styles.usersSectionIcon}`}
+            >
+              <Users size={21} />
+            </div>
 
-            <p>
-              Este projeto possui{" "}
-              <strong>
-                {project._count.apkUsers} usuário(s)
-              </strong>{" "}
-              cadastrado(s).
-            </p>
+            <div>
+              <span className={styles.eyebrow}>
+                Usuários
+              </span>
+
+              <h2>Usuários deste APK</h2>
+
+              <p>
+                <strong>
+                  {project._count.apkUsers}
+                </strong>{" "}
+                usuário(s) cadastrado(s), sendo{" "}
+                <strong>{activeUsers}</strong>{" "}
+                ativo(s).
+              </p>
+            </div>
           </div>
 
           <Link
             href={`/apk-users/new?projectId=${project.id}`}
             className={styles.primaryButton}
           >
-            <Plus size={18} strokeWidth={2.4} />
+            <Plus size={17} strokeWidth={2.5} />
             Novo usuário
           </Link>
         </div>
 
         {project.apkUsers.length === 0 ? (
-          <div className={styles.emptyUsers}>
-            Nenhum usuário cadastrado neste
-            projeto.
+          <div className={styles.emptyState}>
+            <div className={styles.emptyIcon}>
+              <Users size={23} />
+            </div>
+
+            <strong>
+              Nenhum usuário cadastrado
+            </strong>
+
+            <p>
+              Cadastre o primeiro usuário para
+              liberar o acesso a este aplicativo.
+            </p>
           </div>
         ) : (
           <div className={styles.usersList}>
@@ -323,9 +503,20 @@ export default async function ProjectDetailsPage({
                   href={`/apk-users/${user.id}`}
                   className={styles.userRow}
                 >
-                  <div>
-                    <strong>{user.name}</strong>
-                    <small>{user.username}</small>
+                  <div className={styles.userAvatar}>
+                    {user.name
+                      .charAt(0)
+                      .toUpperCase()}
+                  </div>
+
+                  <div className={styles.userInfo}>
+                    <strong>
+                      {user.name}
+                    </strong>
+
+                    <small>
+                      @{user.username}
+                    </small>
                   </div>
 
                   <span
@@ -335,9 +526,19 @@ export default async function ProjectDetailsPage({
                         : styles.inactive
                     }
                   >
+                    <i />
+
                     {user.active
                       ? "Ativo"
                       : "Bloqueado"}
+                  </span>
+
+                  <span
+                    className={
+                      styles.userArrow
+                    }
+                  >
+                    →
                   </span>
                 </Link>
               ),

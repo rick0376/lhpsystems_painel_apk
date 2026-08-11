@@ -2,14 +2,20 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowLeft, PencilLine } from "lucide-react";
+
 import { AdminShell } from "../../../../../components/layout/AdminShell/AdminShell";
 import { getAdminSession } from "../../../../../lib/auth/session";
 import { prisma } from "../../../../../lib/prisma";
+
 import { EditProjectForm } from "./EditProjectForm";
+
 import styles from "./styles.module.scss";
 
 type EditProjectPageProps = {
-  params: Promise<{ id: string }>;
+  params: Promise<{
+    id: string;
+  }>;
 };
 
 export default async function EditProjectPage({
@@ -23,20 +29,24 @@ export default async function EditProjectPage({
 
   const { id } = await params;
 
-  const project = await prisma.appProject.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      appKey: true,
-      description: true,
-      supportWhatsappLabel: true,
-      supportWhatsappNumber: true,
-      supportWhatsappMessage: true,
-      active: true,
-    },
-  });
+  const project =
+    await prisma.appProject.findUnique({
+      where: {
+        id,
+      },
+
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        appKey: true,
+        description: true,
+        supportWhatsappLabel: true,
+        supportWhatsappNumber: true,
+        supportWhatsappMessage: true,
+        active: true,
+      },
+    });
 
   if (!project) {
     redirect("/projects");
@@ -45,16 +55,35 @@ export default async function EditProjectPage({
   return (
     <AdminShell>
       <section className={styles.header}>
-        <div>
-          <span className={styles.badge}>Editar projeto</span>
-          <h1 className={styles.title}>{project.name}</h1>
-          <p className={styles.subtitle}>
-            Altere os dados principais do aplicativo, sua chave de
-            identificação, suporte e o status de uso no painel.
-          </p>
+        <div className={styles.headerMain}>
+          <div className={styles.headerIcon}>
+            <PencilLine size={24} />
+          </div>
+
+          <div>
+            <span className={styles.badge}>
+              Editar projeto
+            </span>
+
+            <h1 className={styles.title}>
+              {project.name}
+            </h1>
+
+            <p className={styles.subtitle}>
+              Atualize os dados de identificação,
+              suporte e acesso deste aplicativo.
+            </p>
+          </div>
         </div>
 
-        <Link href={`/projects/${project.id}`} className={styles.backButton}>
+        <Link
+          href={`/projects/${project.id}`}
+          className={styles.backButton}
+        >
+          <ArrowLeft
+            size={17}
+            strokeWidth={2.4}
+          />
           Voltar
         </Link>
       </section>
@@ -65,10 +94,17 @@ export default async function EditProjectPage({
           name: project.name,
           slug: project.slug,
           appKey: project.appKey,
-          description: project.description || "",
-          supportWhatsappLabel: project.supportWhatsappLabel || "",
-          supportWhatsappNumber: project.supportWhatsappNumber || "",
-          supportWhatsappMessage: project.supportWhatsappMessage || "",
+          description:
+            project.description || "",
+          supportWhatsappLabel:
+            project.supportWhatsappLabel ||
+            "",
+          supportWhatsappNumber:
+            project.supportWhatsappNumber ||
+            "",
+          supportWhatsappMessage:
+            project.supportWhatsappMessage ||
+            "",
           active: project.active,
         }}
       />

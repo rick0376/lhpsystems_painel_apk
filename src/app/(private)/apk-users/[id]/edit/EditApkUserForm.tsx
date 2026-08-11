@@ -6,7 +6,19 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import {
+  AppWindow,
+  CalendarClock,
+  KeyRound,
+  Save,
+  ShieldCheck,
+  Smartphone,
+  StickyNote,
+  UserRound,
+} from "lucide-react";
+
 import { PasswordInput } from "../../../../../components/ui/PasswordInput/PasswordInput";
+
 import styles from "./styles.module.scss";
 
 type ProjectOption = {
@@ -48,37 +60,84 @@ export function EditApkUserForm({
 }: EditApkUserFormProps) {
   const router = useRouter();
 
-  const [projectId, setProjectId] = useState(user.projectId);
-  const [projectName, setProjectName] = useState(initialProjectName);
+  const [projectId, setProjectId] =
+    useState(user.projectId);
 
-  const [name, setName] = useState(user.name);
-  const [username, setUsername] = useState(user.username);
-  const [password, setPassword] = useState("");
+  const [
+    projectName,
+    setProjectName,
+  ] = useState(
+    initialProjectName,
+  );
 
-  const [active, setActive] = useState(user.active);
-  const [expiresAt, setExpiresAt] = useState(user.expiresAt);
-  const [maxDevices, setMaxDevices] = useState(user.maxDevices);
-  const [notes, setNotes] = useState(user.notes);
+  const [name, setName] =
+    useState(user.name);
 
-  const [permissions, setPermissions] =
-    useState<PermissionOption[]>(initialPermissions);
+  const [username, setUsername] =
+    useState(user.username);
 
-  const [loadingPermissions, setLoadingPermissions] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [password, setPassword] =
+    useState("");
 
-  async function handleProjectChange(newProjectId: string) {
-    setProjectId(newProjectId);
+  const [active, setActive] =
+    useState(user.active);
 
-    const selectedProject = projects.find(
-      (project) => project.id === newProjectId,
+  const [
+    expiresAt,
+    setExpiresAt,
+  ] = useState(user.expiresAt);
+
+  const [
+    maxDevices,
+    setMaxDevices,
+  ] = useState(user.maxDevices);
+
+  const [notes, setNotes] =
+    useState(user.notes);
+
+  const [
+    permissions,
+    setPermissions,
+  ] =
+    useState<PermissionOption[]>(
+      initialPermissions,
     );
 
-    setProjectName(selectedProject?.name ?? "");
+  const [
+    loadingPermissions,
+    setLoadingPermissions,
+  ] = useState(false);
 
-    // Se continuar no projeto original, restaura as permissões atuais.
-    if (newProjectId === user.projectId) {
-      setPermissions(initialPermissions);
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  async function handleProjectChange(
+    newProjectId: string,
+  ) {
+    setProjectId(newProjectId);
+
+    const selectedProject =
+      projects.find(
+        (project) =>
+          project.id ===
+          newProjectId,
+      );
+
+    setProjectName(
+      selectedProject?.name ?? "",
+    );
+
+    if (
+      newProjectId ===
+      user.projectId
+    ) {
+      setPermissions(
+        initialPermissions,
+      );
+
       return;
     }
 
@@ -94,48 +153,66 @@ export function EditApkUserForm({
         },
       );
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
       if (!response.ok) {
         setPermissions([]);
+
         setError(
           data?.error ||
           "Não foi possível carregar as permissões deste projeto.",
         );
+
         return;
       }
 
-      const projectPermissions: PermissionOption[] = (
-        data?.permissions ?? []
-      ).map(
-        (permission: {
-          id: string;
-          name: string;
-          key: string;
-          description: string | null;
-          active: boolean;
-        }) => ({
-          id: permission.id,
-          name: permission.name,
-          key: permission.key,
-          description: permission.description,
-          allowed: false,
-        }),
-      );
+      const projectPermissions: PermissionOption[] =
+        (
+          data?.permissions ?? []
+        ).map(
+          (permission: {
+            id: string;
+            name: string;
+            key: string;
+            description:
+            | string
+            | null;
+            active: boolean;
+          }) => ({
+            id: permission.id,
+            name: permission.name,
+            key: permission.key,
+            description:
+              permission.description,
+            allowed: false,
+          }),
+        );
 
-      setPermissions(projectPermissions);
+      setPermissions(
+        projectPermissions,
+      );
     } catch {
       setPermissions([]);
-      setError("Falha ao carregar as permissões do projeto.");
+
+      setError(
+        "Falha ao carregar as permissões do projeto.",
+      );
     } finally {
-      setLoadingPermissions(false);
+      setLoadingPermissions(
+        false,
+      );
     }
   }
 
-  function togglePermission(permissionId: string, allowed: boolean) {
+  function togglePermission(
+    permissionId: string,
+    allowed: boolean,
+  ) {
     setPermissions((current) =>
       current.map((permission) =>
-        permission.id === permissionId
+        permission.id ===
+          permissionId
           ? {
             ...permission,
             allowed,
@@ -176,14 +253,21 @@ export function EditApkUserForm({
         maxDevices,
         notes,
 
-        permissions: permissions.map((permission) => ({
-          permissionId: permission.id,
-          allowed: permission.allowed,
-        })),
+        permissions:
+          permissions.map(
+            (permission) => ({
+              permissionId:
+                permission.id,
+
+              allowed:
+                permission.allowed,
+            }),
+          ),
       };
 
       if (password.trim()) {
-        body.password = password;
+        body.password =
+          password;
       }
 
       const response = await fetch(
@@ -192,31 +276,46 @@ export function EditApkUserForm({
           method: "PATCH",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
-          body: JSON.stringify(body),
+          body:
+            JSON.stringify(body),
         },
       );
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
       if (!response.ok) {
         setError(
           data?.error ||
           "Não foi possível editar o usuário.",
         );
+
         return;
       }
 
-      router.push(`/apk-users/${user.id}`);
+      router.push(
+        `/apk-users/${user.id}`,
+      );
+
       router.refresh();
     } catch {
-      setError("Falha de conexão com o servidor.");
+      setError(
+        "Falha de conexão com o servidor.",
+      );
     } finally {
       setLoading(false);
     }
   }
+
+  const allowedCount =
+    permissions.filter(
+      (permission) =>
+        permission.allowed,
+    ).length;
 
   return (
     <form
@@ -229,192 +328,603 @@ export function EditApkUserForm({
         </div>
       )}
 
-      <div className={styles.grid}>
-        <label className={styles.label}>
-          Projeto
-
-          <select
-            className={styles.input}
-            value={projectId}
-            onChange={(event) =>
-              handleProjectChange(
-                event.target.value,
-              )
-            }
-            disabled={
-              loading || loadingPermissions
+      <section
+        className={
+          styles.formSection
+        }
+      >
+        <div
+          className={
+            styles.sectionHeader
+          }
+        >
+          <div
+            className={
+              styles.sectionIcon
             }
           >
-            {projects.map((project) => (
-              <option
-                key={project.id}
-                value={project.id}
-              >
-                {project.name}
-              </option>
-            ))}
-          </select>
-        </label>
+            <UserRound size={20} />
+          </div>
 
-        <label className={styles.label}>
-          Nome do usuário
+          <div>
+            <span>
+              Identificação
+            </span>
 
-          <input
-            className={styles.input}
-            value={name}
-            onChange={(event) =>
-              setName(event.target.value)
-            }
-            required
-          />
-        </label>
+            <h2>
+              Dados de acesso
+            </h2>
 
-        <label className={styles.label}>
-          Login
-
-          <input
-            className={styles.input}
-            value={username}
-            onChange={(event) =>
-              setUsername(event.target.value)
-            }
-            required
-          />
-        </label>
-
-        <PasswordInput
-          label="Nova senha"
-          placeholder="Deixe em branco para manter"
-          value={password}
-          onChange={setPassword}
-        />
-
-        <label className={styles.label}>
-          Expira em
-
-          <input
-            className={styles.input}
-            type="date"
-            value={expiresAt}
-            onChange={(event) =>
-              setExpiresAt(event.target.value)
-            }
-          />
-        </label>
-
-        <label className={styles.label}>
-          Máximo de dispositivos/navegadores
-
-          <input
-            className={styles.input}
-            type="number"
-            min={1}
-            value={maxDevices}
-            onChange={(event) =>
-              setMaxDevices(
-                Number(event.target.value),
-              )
-            }
-          />
-        </label>
-      </div>
-
-      <h2 className={styles.sectionTitle}>
-        Acesso geral
-      </h2>
-
-      <div className={styles.permissions}>
-        <label className={styles.checkbox}>
-          <input
-            type="checkbox"
-            checked={active}
-            onChange={(event) =>
-              setActive(event.target.checked)
-            }
-          />
-
-          Usuário ativo
-        </label>
-      </div>
-
-      <h2 className={styles.sectionTitle}>
-        Permissões — {projectName}
-      </h2>
-
-      {loadingPermissions ? (
-        <div className={styles.permissionsEmpty}>
-          Carregando permissões...
+            <p>
+              Informações usadas para
+              identificar e autenticar
+              este usuário.
+            </p>
+          </div>
         </div>
-      ) : permissions.length === 0 ? (
-        <div className={styles.permissionsEmpty}>
-          Este APK ainda não possui permissões
-          específicas cadastradas.
-        </div>
-      ) : (
-        <div className={styles.permissions}>
-          {permissions.map((permission) => (
-            <label
-              key={permission.id}
-              className={styles.checkbox}
+
+        <div
+          className={styles.grid}
+        >
+          <label
+            className={styles.label}
+          >
+            <span>Projeto</span>
+
+            <div
+              className={
+                styles.inputWrapper
+              }
             >
-              <input
-                type="checkbox"
-                checked={permission.allowed}
-                onChange={(event) =>
-                  togglePermission(
-                    permission.id,
-                    event.target.checked,
-                  )
+              <AppWindow
+                size={17}
+                className={
+                  styles.inputIcon
                 }
               />
 
-              <span>
-                <strong>
-                  {permission.name}
-                </strong>
-
-                {permission.description && (
-                  <small>
-                    {permission.description}
-                  </small>
+              <select
+                className={
+                  styles.input
+                }
+                value={projectId}
+                onChange={(event) =>
+                  handleProjectChange(
+                    event.target
+                      .value,
+                  )
+                }
+                disabled={
+                  loading ||
+                  loadingPermissions
+                }
+              >
+                {projects.map(
+                  (project) => (
+                    <option
+                      key={
+                        project.id
+                      }
+                      value={
+                        project.id
+                      }
+                    >
+                      {project.name}
+                    </option>
+                  ),
                 )}
-              </span>
-            </label>
-          ))}
-        </div>
-      )}
+              </select>
+            </div>
+          </label>
 
-      <label className={styles.label}>
-        Observações
+          <label
+            className={styles.label}
+          >
+            <span>
+              Nome do usuário
+            </span>
+
+            <div
+              className={
+                styles.inputWrapper
+              }
+            >
+              <UserRound
+                size={17}
+                className={
+                  styles.inputIcon
+                }
+              />
+
+              <input
+                className={
+                  styles.input
+                }
+                value={name}
+                onChange={(event) =>
+                  setName(
+                    event.target
+                      .value,
+                  )
+                }
+                required
+              />
+            </div>
+          </label>
+
+          <label
+            className={styles.label}
+          >
+            <span>Login</span>
+
+            <div
+              className={
+                styles.inputWrapper
+              }
+            >
+              <KeyRound
+                size={17}
+                className={
+                  styles.inputIcon
+                }
+              />
+
+              <input
+                className={
+                  styles.input
+                }
+                value={username}
+                onChange={(event) =>
+                  setUsername(
+                    event.target
+                      .value,
+                  )
+                }
+                required
+              />
+            </div>
+          </label>
+
+          <div
+            className={
+              styles.passwordField
+            }
+          >
+            <PasswordInput
+              label="Nova senha"
+              placeholder="Deixe em branco para manter"
+              value={password}
+              onChange={setPassword}
+            />
+
+            <small>
+              Deixe em branco para
+              manter a senha atual.
+            </small>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className={
+          styles.formSection
+        }
+      >
+        <div
+          className={
+            styles.sectionHeader
+          }
+        >
+          <div
+            className={`${styles.sectionIcon} ${styles.accessSectionIcon}`}
+          >
+            <ShieldCheck
+              size={20}
+            />
+          </div>
+
+          <div>
+            <span>
+              Licença
+            </span>
+
+            <h2>
+              Controle de acesso
+            </h2>
+
+            <p>
+              Defina validade, quantidade
+              de dispositivos e situação
+              geral do usuário.
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={styles.grid}
+        >
+          <label
+            className={styles.label}
+          >
+            <span>Expira em</span>
+
+            <div
+              className={
+                styles.inputWrapper
+              }
+            >
+              <CalendarClock
+                size={17}
+                className={
+                  styles.inputIcon
+                }
+              />
+
+              <input
+                className={
+                  styles.input
+                }
+                type="date"
+                value={expiresAt}
+                onChange={(event) =>
+                  setExpiresAt(
+                    event.target
+                      .value,
+                  )
+                }
+              />
+            </div>
+          </label>
+
+          <label
+            className={styles.label}
+          >
+            <span>
+              Máximo de dispositivos
+            </span>
+
+            <div
+              className={
+                styles.inputWrapper
+              }
+            >
+              <Smartphone
+                size={17}
+                className={
+                  styles.inputIcon
+                }
+              />
+
+              <input
+                className={
+                  styles.input
+                }
+                type="number"
+                min={1}
+                value={maxDevices}
+                onChange={(event) =>
+                  setMaxDevices(
+                    Number(
+                      event.target
+                        .value,
+                    ),
+                  )
+                }
+              />
+            </div>
+
+            <small>
+              Celulares e navegadores
+              permitidos para este login.
+            </small>
+          </label>
+        </div>
+
+        <div
+          className={
+            styles.statusBox
+          }
+        >
+          <div
+            className={
+              styles.statusInfo
+            }
+          >
+            <div
+              className={
+                styles.statusIcon
+              }
+            >
+              <ShieldCheck
+                size={18}
+              />
+            </div>
+
+            <div>
+              <strong>
+                Usuário ativo
+              </strong>
+
+              <span>
+                Desative para bloquear
+                imediatamente o acesso aos
+                aplicativos.
+              </span>
+            </div>
+          </div>
+
+          <label
+            className={styles.switch}
+          >
+            <input
+              type="checkbox"
+              checked={active}
+              onChange={(event) =>
+                setActive(
+                  event.target
+                    .checked,
+                )
+              }
+            />
+
+            <span
+              className={
+                styles.slider
+              }
+            />
+          </label>
+        </div>
+      </section>
+
+      <section
+        className={
+          styles.formSection
+        }
+      >
+        <div
+          className={
+            styles.permissionsHeader
+          }
+        >
+          <div
+            className={
+              styles.sectionHeaderSimple
+            }
+          >
+            <div
+              className={`${styles.sectionIcon} ${styles.permissionSectionIcon}`}
+            >
+              <ShieldCheck
+                size={20}
+              />
+            </div>
+
+            <div>
+              <span>
+                Recursos do aplicativo
+              </span>
+
+              <h2>
+                Permissões —{" "}
+                {projectName}
+              </h2>
+
+              <p>
+                Escolha quais funções
+                estarão disponíveis para
+                este usuário.
+              </p>
+            </div>
+          </div>
+
+          <div
+            className={
+              styles.permissionCounter
+            }
+          >
+            <strong>
+              {allowedCount}
+            </strong>
+
+            <span>
+              de {permissions.length}{" "}
+              liberadas
+            </span>
+          </div>
+        </div>
+
+        {loadingPermissions ? (
+          <div
+            className={
+              styles.permissionsEmpty
+            }
+          >
+            Carregando permissões...
+          </div>
+        ) : permissions.length ===
+          0 ? (
+          <div
+            className={
+              styles.permissionsEmpty
+            }
+          >
+            Este APK ainda não possui
+            permissões específicas
+            cadastradas.
+          </div>
+        ) : (
+          <div
+            className={
+              styles.permissions
+            }
+          >
+            {permissions.map(
+              (permission) => (
+                <label
+                  key={permission.id}
+                  className={`${styles.permissionItem} ${permission.allowed
+                      ? styles.permissionItemActive
+                      : ""
+                    }`}
+                >
+                  <div
+                    className={
+                      styles.permissionCheck
+                    }
+                  >
+                    <input
+                      type="checkbox"
+                      checked={
+                        permission.allowed
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        togglePermission(
+                          permission.id,
+                          event.target
+                            .checked,
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div
+                    className={
+                      styles.permissionInfo
+                    }
+                  >
+                    <strong>
+                      {permission.name}
+                    </strong>
+
+                    <code>
+                      {permission.key}
+                    </code>
+
+                    {permission.description && (
+                      <small>
+                        {
+                          permission.description
+                        }
+                      </small>
+                    )}
+                  </div>
+
+                  <span
+                    className={
+                      permission.allowed
+                        ? styles.allowedBadge
+                        : styles.blockedBadge
+                    }
+                  >
+                    {permission.allowed
+                      ? "Liberado"
+                      : "Bloqueado"}
+                  </span>
+                </label>
+              ),
+            )}
+          </div>
+        )}
+      </section>
+
+      <section
+        className={
+          styles.formSection
+        }
+      >
+        <div
+          className={
+            styles.sectionHeader
+          }
+        >
+          <div
+            className={`${styles.sectionIcon} ${styles.notesSectionIcon}`}
+          >
+            <StickyNote
+              size={20}
+            />
+          </div>
+
+          <div>
+            <span>
+              Informações internas
+            </span>
+
+            <h2>Observações</h2>
+
+            <p>
+              Anotações administrativas
+              sobre este usuário.
+            </p>
+          </div>
+        </div>
 
         <textarea
-          className={styles.textarea}
+          className={
+            styles.textarea
+          }
           value={notes}
+          placeholder="Digite alguma observação sobre este usuário..."
           onChange={(event) =>
-            setNotes(event.target.value)
+            setNotes(
+              event.target.value,
+            )
           }
         />
-      </label>
+      </section>
 
       <div className={styles.actions}>
-        <Link
-          href={`/apk-users/${user.id}`}
-          className={styles.cancelButton}
-        >
-          Cancelar
-        </Link>
-
-        <button
-          className={styles.submitButton}
-          type="submit"
-          disabled={
-            loading || loadingPermissions
+        <div
+          className={
+            styles.actionsText
           }
         >
-          {loading
-            ? "Salvando..."
-            : "Salvar alterações"}
-        </button>
+          <strong>
+            Salvar alterações?
+          </strong>
+
+          <span>
+            As novas configurações serão
+            aplicadas ao usuário.
+          </span>
+        </div>
+
+        <div
+          className={
+            styles.actionButtons
+          }
+        >
+          <Link
+            href={`/apk-users/${user.id}`}
+            className={
+              styles.cancelButton
+            }
+          >
+            Cancelar
+          </Link>
+
+          <button
+            className={
+              styles.submitButton
+            }
+            type="submit"
+            disabled={
+              loading ||
+              loadingPermissions
+            }
+          >
+            <Save
+              size={17}
+              strokeWidth={2.5}
+            />
+
+            {loading
+              ? "Salvando..."
+              : "Salvar alterações"}
+          </button>
+        </div>
       </div>
     </form>
   );

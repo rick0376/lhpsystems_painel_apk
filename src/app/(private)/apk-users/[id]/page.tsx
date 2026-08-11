@@ -2,7 +2,17 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Pencil } from "lucide-react";
+import {
+  AppWindow,
+  ArrowLeft,
+  CalendarClock,
+  KeyRound,
+  Pencil,
+  ShieldCheck,
+  Smartphone,
+  StickyNote,
+  UserRound,
+} from "lucide-react";
 
 import { AdminShell } from "../../../../components/layout/AdminShell/AdminShell";
 import { getAdminSession } from "../../../../lib/auth/session";
@@ -24,6 +34,25 @@ type ApkUserDetailsPageProps = {
   }>;
 };
 
+function formatDate(date: Date | null) {
+  if (!date) {
+    return "Sem expiração";
+  }
+
+  return new Intl.DateTimeFormat("pt-BR").format(date);
+}
+
+function formatDateTime(date: Date | null) {
+  if (!date) {
+    return "Nenhum acesso registrado";
+  }
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(date);
+}
+
 export default async function ApkUserDetailsPage({
   params,
 }: ApkUserDetailsPageProps) {
@@ -35,78 +64,79 @@ export default async function ApkUserDetailsPage({
 
   const { id } = await params;
 
-  const apkUser = await prisma.apkUser.findUnique({
-    where: {
-      id,
-    },
+  const apkUser =
+    await prisma.apkUser.findUnique({
+      where: {
+        id,
+      },
 
-    select: {
-      id: true,
-      name: true,
-      username: true,
-      active: true,
-      expiresAt: true,
-      maxDevices: true,
-      notes: true,
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        active: true,
+        expiresAt: true,
+        maxDevices: true,
+        notes: true,
 
-      project: {
-        select: {
-          id: true,
-          name: true,
+        project: {
+          select: {
+            id: true,
+            name: true,
 
-          permissions: {
-            where: {
-              active: true,
-            },
+            permissions: {
+              where: {
+                active: true,
+              },
 
-            orderBy: {
-              name: "asc",
-            },
+              orderBy: {
+                name: "asc",
+              },
 
-            select: {
-              id: true,
-              name: true,
-              key: true,
-              description: true,
+              select: {
+                id: true,
+                name: true,
+                key: true,
+                description: true,
 
-              userPermissions: {
-                where: {
-                  apkUserId: id,
+                userPermissions: {
+                  where: {
+                    apkUserId: id,
+                  },
+
+                  select: {
+                    allowed: true,
+                  },
+
+                  take: 1,
                 },
-
-                select: {
-                  allowed: true,
-                },
-
-                take: 1,
               },
             },
           },
         },
-      },
 
-      devices: {
-        orderBy: {
-          lastAccessAt: "desc",
-        },
+        devices: {
+          orderBy: {
+            lastAccessAt: "desc",
+          },
 
-        select: {
-          id: true,
-          deviceId: true,
-          deviceName: true,
-          active: true,
-          lastAccessAt: true,
+          select: {
+            id: true,
+            deviceId: true,
+            deviceName: true,
+            active: true,
+            lastAccessAt: true,
+          },
         },
       },
-    },
-  });
+    });
 
   if (!apkUser) {
     redirect("/apk-users");
   }
 
   const isExpired =
-    apkUser.expiresAt &&
+    !!apkUser.expiresAt &&
     apkUser.expiresAt.getTime() <
     new Date().getTime();
 
@@ -116,7 +146,8 @@ export default async function ApkUserDetailsPage({
         id: permission.id,
         name: permission.name,
         key: permission.key,
-        description: permission.description,
+        description:
+          permission.description,
 
         allowed:
           permission.userPermissions[0]
@@ -124,114 +155,254 @@ export default async function ApkUserDetailsPage({
       }),
     );
 
+  const allowedPermissions =
+    permissions.filter(
+      (permission) =>
+        permission.allowed,
+    ).length;
+
+  const blockedPermissions =
+    permissions.length -
+    allowedPermissions;
+
+  const activeDevices =
+    apkUser.devices.filter(
+      (device) => device.active,
+    ).length;
+
+  const userStatus =
+    !apkUser.active
+      ? "blocked"
+      : isExpired
+        ? "expired"
+        : "active";
+
   return (
     <AdminShell>
-      <section className={styles.header}>
-        <div>
-          <span className={styles.badge}>
-            Usuário APK
-          </span>
+      <section className={styles.hero}>
+        <div className={styles.heroMain}>
+          <div
+            className={
+              styles.userAvatar
+            }
+          >
+            {apkUser.name
+              .charAt(0)
+              .toUpperCase()}
+          </div>
 
-          <h1 className={styles.title}>
-            {apkUser.name}
-          </h1>
+          <div className={styles.heroContent}>
+            <div className={styles.heroTop}>
+              <span className={styles.badge}>
+                Usuário APK
+              </span>
 
-          <p className={styles.subtitle}>
-            Controle o acesso, permissões,
-            prazo de uso e dispositivos deste
-            usuário.
-          </p>
+              {userStatus ===
+                "active" && (
+                  <span
+                    className={
+                      styles.heroActive
+                    }
+                  >
+                    <i />
+                    Acesso ativo
+                  </span>
+                )}
+
+              {userStatus ===
+                "expired" && (
+                  <span
+                    className={
+                      styles.heroExpired
+                    }
+                  >
+                    <i />
+                    Licença vencida
+                  </span>
+                )}
+
+              {userStatus ===
+                "blocked" && (
+                  <span
+                    className={
+                      styles.heroInactive
+                    }
+                  >
+                    <i />
+                    Usuário bloqueado
+                  </span>
+                )}
+            </div>
+
+            <h1 className={styles.title}>
+              {apkUser.name}
+            </h1>
+
+            <p className={styles.subtitle}>
+              Controle acesso, permissões,
+              validade e dispositivos deste
+              usuário.
+            </p>
+
+            <div
+              className={
+                styles.heroMeta
+              }
+            >
+              <span>
+                <UserRound size={14} />
+                @{apkUser.username}
+              </span>
+
+              <span>
+                <AppWindow size={14} />
+                {apkUser.project.name}
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className={styles.headerActions}>
+        <div
+          className={
+            styles.headerActions
+          }
+        >
           <Link
             href={`/apk-users/${apkUser.id}/edit`}
-            className={styles.editButton}
+            className={
+              styles.editButton
+            }
           >
             <Pencil
-              size={18}
+              size={17}
               strokeWidth={2.4}
             />
-
-            Editar
+            Editar usuário
           </Link>
 
           <Link
             href="/apk-users"
-            className={styles.backButton}
+            className={
+              styles.backButton
+            }
           >
+            <ArrowLeft
+              size={17}
+              strokeWidth={2.4}
+            />
             Voltar
           </Link>
         </div>
       </section>
 
-      <section className={styles.grid}>
-        <div className={styles.card}>
-          <span className={styles.label}>
-            Projeto
-          </span>
-
-          <strong>
-            {apkUser.project.name}
-          </strong>
-        </div>
-
-        <div className={styles.card}>
-          <span className={styles.label}>
-            Login do APK
-          </span>
-
-          <strong>
-            {apkUser.username}
-          </strong>
-        </div>
-
-        <div className={styles.card}>
-          <span className={styles.label}>
-            Status
-          </span>
-
-          <strong
+      <section
+        className={styles.statsGrid}
+      >
+        <div className={styles.statCard}>
+          <div
             className={
-              apkUser.active
-                ? styles.active
-                : styles.inactive
+              styles.statIcon
             }
           >
-            {apkUser.active
-              ? "Ativo"
-              : "Bloqueado"}
-          </strong>
+            <AppWindow size={20} />
+          </div>
+
+          <div>
+            <span>Projeto</span>
+
+            <strong
+              className={
+                styles.statText
+              }
+            >
+              {apkUser.project.name}
+            </strong>
+
+            <small>
+              Aplicativo vinculado
+            </small>
+          </div>
         </div>
 
-        <div className={styles.card}>
-          <span className={styles.label}>
-            Expiração
-          </span>
-
-          <strong
-            className={
-              isExpired
-                ? styles.expired
-                : undefined
-            }
+        <div className={styles.statCard}>
+          <div
+            className={`${styles.statIcon} ${styles.loginIcon}`}
           >
-            {apkUser.expiresAt
-              ? apkUser.expiresAt.toLocaleDateString(
-                "pt-BR",
-              )
-              : "Sem expiração"}
-          </strong>
+            <KeyRound size={20} />
+          </div>
+
+          <div>
+            <span>Login do APK</span>
+
+            <strong
+              className={
+                styles.statText
+              }
+            >
+              {apkUser.username}
+            </strong>
+
+            <small>
+              Usuário de acesso
+            </small>
+          </div>
         </div>
 
-        <div className={styles.card}>
-          <span className={styles.label}>
-            Máximo de dispositivos
-          </span>
+        <div className={styles.statCard}>
+          <div
+            className={`${styles.statIcon} ${styles.dateIcon}`}
+          >
+            <CalendarClock size={20} />
+          </div>
 
-          <strong>
-            {apkUser.maxDevices}
-          </strong>
+          <div>
+            <span>Expiração</span>
+
+            <strong
+              className={
+                isExpired
+                  ? styles.expiredText
+                  : styles.statText
+              }
+            >
+              {formatDate(
+                apkUser.expiresAt,
+              )}
+            </strong>
+
+            <small>
+              {isExpired
+                ? "Licença vencida"
+                : "Prazo de utilização"}
+            </small>
+          </div>
+        </div>
+
+        <div className={styles.statCard}>
+          <div
+            className={`${styles.statIcon} ${styles.deviceIcon}`}
+          >
+            <Smartphone size={20} />
+          </div>
+
+          <div>
+            <span>Dispositivos</span>
+
+            <strong>
+              {apkUser.devices.length}
+              <small
+                className={
+                  styles.deviceLimit
+                }
+              >
+                / {apkUser.maxDevices}
+              </small>
+            </strong>
+
+            <small>
+              {activeDevices} ativo(s)
+            </small>
+          </div>
         </div>
       </section>
 
@@ -239,42 +410,108 @@ export default async function ApkUserDetailsPage({
         className={styles.permissionsCard}
       >
         <div
-          className={styles.permissionsHeader}
+          className={
+            styles.permissionsHeader
+          }
         >
-          <div>
-            <h2>
-              Permissões —{" "}
-              {apkUser.project.name}
-            </h2>
+          <div
+            className={
+              styles.sectionHeading
+            }
+          >
+            <div
+              className={
+                styles.sectionIcon
+              }
+            >
+              <ShieldCheck size={21} />
+            </div>
 
-            <p>
-              Permissões específicas deste
-              aplicativo para este usuário.
-            </p>
+            <div>
+              <span
+                className={
+                  styles.eyebrow
+                }
+              >
+                Controle de acesso
+              </span>
+
+              <h2>
+                Permissões —{" "}
+                {apkUser.project.name}
+              </h2>
+
+              <p>
+                Recursos liberados
+                especificamente para este
+                usuário.
+              </p>
+            </div>
           </div>
 
-          <Link
-            href={`/apk-users/${apkUser.id}/edit`}
-            className={styles.manageButton}
+          <div
+            className={
+              styles.permissionActions
+            }
           >
-            <Pencil
-              size={16}
-              strokeWidth={2.4}
-            />
+            <div
+              className={
+                styles.permissionSummary
+              }
+            >
+              <span>
+                <strong>
+                  {allowedPermissions}
+                </strong>
+                liberadas
+              </span>
 
-            Alterar permissões
-          </Link>
+              <span>
+                <strong>
+                  {blockedPermissions}
+                </strong>
+                bloqueadas
+              </span>
+            </div>
+
+            <Link
+              href={`/apk-users/${apkUser.id}/edit`}
+              className={
+                styles.manageButton
+              }
+            >
+              <Pencil
+                size={16}
+                strokeWidth={2.4}
+              />
+              Alterar permissões
+            </Link>
+          </div>
         </div>
 
         {permissions.length === 0 ? (
           <div
             className={
-              styles.emptyPermissions
+              styles.emptyState
             }
           >
-            Este APK ainda não possui
-            permissões específicas
-            cadastradas.
+            <div
+              className={
+                styles.emptyIcon
+              }
+            >
+              <ShieldCheck size={23} />
+            </div>
+
+            <strong>
+              Nenhuma permissão
+              cadastrada
+            </strong>
+
+            <p>
+              Este APK ainda não possui
+              permissões específicas.
+            </p>
           </div>
         ) : (
           <div
@@ -286,34 +523,47 @@ export default async function ApkUserDetailsPage({
               (permission) => (
                 <div
                   key={permission.id}
-                  className={
-                    styles.permissionItem
-                  }
+                  className={`${styles.permissionItem} ${permission.allowed
+                      ? styles.permissionItemAllowed
+                      : styles.permissionItemBlocked
+                    }`}
                 >
                   <div
                     className={
-                      styles.permissionContent
+                      styles.permissionMain
                     }
                   >
-                    <strong
+                    <div
                       className={
-                        styles.permissionName
+                        styles.permissionIcon
                       }
                     >
-                      {permission.name}
-                    </strong>
+                      <ShieldCheck
+                        size={17}
+                      />
+                    </div>
 
-                    <code>
-                      {permission.key}
-                    </code>
+                    <div
+                      className={
+                        styles.permissionContent
+                      }
+                    >
+                      <strong>
+                        {permission.name}
+                      </strong>
 
-                    {permission.description && (
-                      <p>
-                        {
-                          permission.description
-                        }
-                      </p>
-                    )}
+                      <code>
+                        {permission.key}
+                      </code>
+
+                      {permission.description && (
+                        <p>
+                          {
+                            permission.description
+                          }
+                        </p>
+                      )}
+                    </div>
                   </div>
 
                   <span
@@ -323,6 +573,8 @@ export default async function ApkUserDetailsPage({
                         : styles.permissionBlocked
                     }
                   >
+                    <i />
+
                     {permission.allowed
                       ? "Liberado"
                       : "Bloqueado"}
@@ -334,60 +586,208 @@ export default async function ApkUserDetailsPage({
         )}
       </section>
 
-      <section className={styles.notesCard}>
-        <span className={styles.label}>
-          Observações
-        </span>
+      <section className={styles.bottomGrid}>
+        <div className={styles.notesCard}>
+          <div
+            className={
+              styles.smallSectionHeader
+            }
+          >
+            <div
+              className={
+                styles.notesIcon
+              }
+            >
+              <StickyNote size={19} />
+            </div>
 
-        <p>
-          {apkUser.notes ||
-            "Nenhuma observação cadastrada."}
-        </p>
+            <div>
+              <span>
+                Informações internas
+              </span>
+
+              <h2>Observações</h2>
+            </div>
+          </div>
+
+          <p>
+            {apkUser.notes ||
+              "Nenhuma observação cadastrada."}
+          </p>
+        </div>
+
+        <div
+          className={
+            styles.deviceSummaryCard
+          }
+        >
+          <div
+            className={
+              styles.smallSectionHeader
+            }
+          >
+            <div
+              className={
+                styles.devicesIcon
+              }
+            >
+              <Smartphone size={19} />
+            </div>
+
+            <div>
+              <span>
+                Limite de acesso
+              </span>
+
+              <h2>
+                Dispositivos utilizados
+              </h2>
+            </div>
+          </div>
+
+          <div
+            className={
+              styles.deviceProgressInfo
+            }
+          >
+            <strong>
+              {apkUser.devices.length}
+            </strong>
+
+            <span>
+              de {apkUser.maxDevices}{" "}
+              permitidos
+            </span>
+          </div>
+
+          <div
+            className={
+              styles.deviceProgress
+            }
+          >
+            <div
+              style={{
+                width: `${Math.min(
+                  100,
+                  apkUser.maxDevices > 0
+                    ? (apkUser.devices
+                      .length /
+                      apkUser.maxDevices) *
+                    100
+                    : 0,
+                )}%`,
+              }}
+            />
+          </div>
+        </div>
       </section>
 
       <section
         className={styles.devicesCard}
       >
         <div
-          className={styles.devicesHeader}
+          className={
+            styles.devicesHeader
+          }
         >
-          <div>
-            <h2>
-              Dispositivos vinculados
-            </h2>
+          <div
+            className={
+              styles.sectionHeading
+            }
+          >
+            <div
+              className={`${styles.sectionIcon} ${styles.blueSectionIcon}`}
+            >
+              <Smartphone size={21} />
+            </div>
 
-            <p>
-              Celulares ou navegadores que
-              já acessaram este usuário.
-            </p>
+            <div>
+              <span
+                className={
+                  styles.eyebrow
+                }
+              >
+                Segurança
+              </span>
+
+              <h2>
+                Dispositivos vinculados
+              </h2>
+
+              <p>
+                Celulares ou navegadores
+                que já utilizaram este
+                acesso.
+              </p>
+            </div>
           </div>
 
-          <strong>
-            {apkUser.devices.length}{" "}
-            dispositivo(s)
-          </strong>
+          <span
+            className={
+              styles.deviceBadge
+            }
+          >
+            {apkUser.devices.length} /{" "}
+            {apkUser.maxDevices}
+          </span>
         </div>
 
-        {apkUser.devices.length === 0 ? (
+        {apkUser.devices.length ===
+          0 ? (
           <div
-            className={styles.emptyDevice}
+            className={
+              styles.emptyState
+            }
           >
-            Nenhum dispositivo vinculado
-            ainda.
+            <div
+              className={
+                styles.emptyIcon
+              }
+            >
+              <Smartphone size={23} />
+            </div>
+
+            <strong>
+              Nenhum dispositivo
+              vinculado
+            </strong>
+
+            <p>
+              O primeiro dispositivo
+              aparecerá aqui após o login.
+            </p>
           </div>
         ) : (
           <div
-            className={styles.deviceList}
+            className={
+              styles.deviceList
+            }
           >
             {apkUser.devices.map(
-              (device: ApkUserDevice) => (
+              (
+                device: ApkUserDevice,
+              ) => (
                 <div
                   key={device.id}
                   className={
                     styles.deviceItem
                   }
                 >
-                  <div>
+                  <div
+                    className={
+                      styles.deviceItemIcon
+                    }
+                  >
+                    <Smartphone
+                      size={18}
+                    />
+                  </div>
+
+                  <div
+                    className={
+                      styles.deviceInfo
+                    }
+                  >
                     <strong>
                       {device.deviceName ||
                         "Dispositivo sem nome"}
@@ -396,6 +796,13 @@ export default async function ApkUserDetailsPage({
                     <small>
                       {device.deviceId}
                     </small>
+
+                    <span>
+                      Último acesso:{" "}
+                      {formatDateTime(
+                        device.lastAccessAt,
+                      )}
+                    </span>
                   </div>
 
                   <span
@@ -405,6 +812,8 @@ export default async function ApkUserDetailsPage({
                         : styles.inactive
                     }
                   >
+                    <i />
+
                     {device.active
                       ? "Ativo"
                       : "Bloqueado"}
