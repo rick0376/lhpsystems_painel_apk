@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
 import {
   AppWindow,
+  ArrowUpDown,
   Ban,
   Clock3,
   Eye,
   MonitorSmartphone,
+  Search,
   ShieldCheck,
   Users,
 } from "lucide-react";
@@ -41,6 +44,50 @@ type DeviceListItem = {
   };
 };
 
+type DeviceFilter =
+  | "all"
+  | "active"
+  | "blocked"
+  | "recent"
+  | "never";
+
+type DeviceSort =
+  | "access_desc"
+  | "access_asc"
+  | "device_asc"
+  | "device_desc"
+  | "user_asc"
+  | "user_desc"
+  | "project_asc"
+  | "project_desc";
+
+type DevicesPageProps = {
+  searchParams: Promise<{
+    q?: string;
+    status?: string;
+    sort?: string;
+  }>;
+};
+
+const DEVICE_FILTERS: DeviceFilter[] = [
+  "all",
+  "active",
+  "blocked",
+  "recent",
+  "never",
+];
+
+const DEVICE_SORTS: DeviceSort[] = [
+  "access_desc",
+  "access_asc",
+  "device_asc",
+  "device_desc",
+  "user_asc",
+  "user_desc",
+  "project_asc",
+  "project_desc",
+];
+
 function formatDate(date: Date | null) {
   if (!date) {
     return "Nunca acessou";
@@ -67,7 +114,69 @@ function accessedRecently(date: Date | null) {
   return date >= sevenDaysAgo;
 }
 
-export default async function DevicesPage() {
+function normalizeText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(
+      /[\u0300-\u036f]/g,
+      "",
+    )
+    .toLocaleLowerCase("pt-BR");
+}
+
+function isDeviceFilter(
+  value: string,
+): value is DeviceFilter {
+  return DEVICE_FILTERS.includes(
+    value as DeviceFilter,
+  );
+}
+
+function isDeviceSort(
+  value: string,
+): value is DeviceSort {
+  return DEVICE_SORTS.includes(
+    value as DeviceSort,
+  );
+}
+
+function compareAccessDate(
+  a: Date | null,
+  b: Date | null,
+  direction: "asc" | "desc",
+) {
+  if (!a && !b) {
+    return 0;
+  }
+
+  /*
+   * Dispositivos que nunca acessaram
+   * ficam sempre no final.
+   */
+  if (!a) {
+    return 1;
+  }
+
+  if (!b) {
+    return -1;
+  }
+
+  if (direction === "desc") {
+    return (
+      b.getTime() -
+      a.getTime()
+    );
+  }
+
+  return (
+    a.getTime() -
+    b.getTime()
+  );
+}
+
+export default async function DevicesPage({
+  searchParams,
+}: DevicesPageProps) {
   const session =
     await getAdminSession();
 
@@ -75,12 +184,34 @@ export default async function DevicesPage() {
     redirect("/login");
   }
 
+  const params =
+    await searchParams;
+
+  const search =
+    typeof params.q === "string"
+      ? params.q.trim()
+      : "";
+
+  const statusFilter: DeviceFilter =
+    typeof params.status === "string" &&
+      isDeviceFilter(params.status)
+      ? params.status
+      : "all";
+
+  const sort: DeviceSort =
+    typeof params.sort === "string" &&
+      isDeviceSort(params.sort)
+      ? params.sort
+      : "access_desc";
+
+  /*
+   * =====================================================
+   * CARREGA DISPOSITIVOS
+   * =====================================================
+   */
+
   const devices =
     (await prisma.device.findMany({
-      orderBy: {
-        updatedAt: "desc",
-      },
-
       include: {
         apkUser: {
           select: {
@@ -100,6 +231,12 @@ export default async function DevicesPage() {
       },
     })) as DeviceListItem[];
 
+  /*
+   * =====================================================
+   * RESUMO
+   * =====================================================
+   */
+
   const activeDevices =
     devices.filter(
       (device) => device.active,
@@ -110,53 +247,276 @@ export default async function DevicesPage() {
       (device) => !device.active,
     ).length;
 
-  const uniqueUsers = new Set(
-    devices.map(
-      (device) => device.apkUser.id,
-    ),
-  ).size;
+  const uniqueUsers =
+    new Set(
+      devices.map(
+        (device) =>
+          device.apkUser.id,
+      ),
+    ).size;
 
-  const uniqueProjects = new Set(
-    devices.map(
-      (device) =>
-        device.apkUser.project.id,
-    ),
-  ).size;
+  const uniqueProjects =
+    new Set(
+      devices.map(
+        (device) =>
+          device.apkUser.project.id,
+      ),
+    ).size;
 
   const recentDevices =
-    devices.filter((device) =>
-      accessedRecently(
-        device.lastAccessAt,
-      ),
+    devices.filter(
+      (device) =>
+        accessedRecently(
+          device.lastAccessAt,
+        ),
     ).length;
+
+  /*
+   * =====================================================
+   * BUSCA E FILTROS
+   * =====================================================
+   */
+
+  const normalizedSearch =
+    normalizeText(search);
+
+  let filteredDevices =
+    devices.filter(
+      (device) => {
+        const deviceName =
+          device.deviceName ||
+          "Sem nome";
+
+        const matchesSearch =
+          !normalizedSearch ||
+          normalizeText(
+            deviceName,
+          ).includes(
+            normalizedSearch,
+          ) ||
+          normalizeText(
+            device.deviceId,
+          ).includes(
+            normalizedSearch,
+          ) ||
+          normalizeText(
+            device.apkUser.name,
+          ).includes(
+            normalizedSearch,
+          ) ||
+          normalizeText(
+            device.apkUser.username,
+          ).includes(
+            normalizedSearch,
+          ) ||
+          normalizeText(
+            device.apkUser.project.name,
+          ).includes(
+            normalizedSearch,
+          ) ||
+          normalizeText(
+            device.apkUser.project.slug,
+          ).includes(
+            normalizedSearch,
+          );
+
+        let matchesStatus =
+          true;
+
+        switch (statusFilter) {
+          case "active":
+            matchesStatus =
+              device.active;
+
+            break;
+
+          case "blocked":
+            matchesStatus =
+              !device.active;
+
+            break;
+
+          case "recent":
+            matchesStatus =
+              accessedRecently(
+                device.lastAccessAt,
+              );
+
+            break;
+
+          case "never":
+            matchesStatus =
+              !device.lastAccessAt;
+
+            break;
+
+          case "all":
+          default:
+            matchesStatus =
+              true;
+        }
+
+        return (
+          matchesSearch &&
+          matchesStatus
+        );
+      },
+    );
+
+  /*
+   * =====================================================
+   * CLASSIFICAÇÃO
+   * =====================================================
+   */
+
+  filteredDevices = [
+    ...filteredDevices,
+  ].sort((a, b) => {
+    const deviceNameA =
+      a.deviceName ||
+      "Sem nome";
+
+    const deviceNameB =
+      b.deviceName ||
+      "Sem nome";
+
+    switch (sort) {
+      case "access_asc":
+        return compareAccessDate(
+          a.lastAccessAt,
+          b.lastAccessAt,
+          "asc",
+        );
+
+      case "device_asc":
+        return deviceNameA.localeCompare(
+          deviceNameB,
+          "pt-BR",
+          {
+            sensitivity: "base",
+          },
+        );
+
+      case "device_desc":
+        return deviceNameB.localeCompare(
+          deviceNameA,
+          "pt-BR",
+          {
+            sensitivity: "base",
+          },
+        );
+
+      case "user_asc":
+        return a.apkUser.name.localeCompare(
+          b.apkUser.name,
+          "pt-BR",
+          {
+            sensitivity: "base",
+          },
+        );
+
+      case "user_desc":
+        return b.apkUser.name.localeCompare(
+          a.apkUser.name,
+          "pt-BR",
+          {
+            sensitivity: "base",
+          },
+        );
+
+      case "project_asc":
+        return a.apkUser.project.name.localeCompare(
+          b.apkUser.project.name,
+          "pt-BR",
+          {
+            sensitivity: "base",
+          },
+        );
+
+      case "project_desc":
+        return b.apkUser.project.name.localeCompare(
+          a.apkUser.project.name,
+          "pt-BR",
+          {
+            sensitivity: "base",
+          },
+        );
+
+      case "access_desc":
+      default:
+        return compareAccessDate(
+          a.lastAccessAt,
+          b.lastAccessAt,
+          "desc",
+        );
+    }
+  });
+
+  const hasFilters =
+    search.length > 0 ||
+    statusFilter !== "all" ||
+    sort !== "access_desc";
 
   return (
     <AdminShell>
+      {/* ===================================================
+          CABEÇALHO
+      =================================================== */}
+
       <section className={styles.header}>
-        <div className={styles.headerMain}>
-          <div className={styles.headerIcon}>
-            <MonitorSmartphone size={25} />
+        <div
+          className={
+            styles.headerMain
+          }
+        >
+          <div
+            className={
+              styles.headerIcon
+            }
+          >
+            <MonitorSmartphone
+              size={27}
+            />
           </div>
 
           <div>
-            <span className={styles.badge}>
+            <span
+              className={
+                styles.badge
+              }
+            >
               Controle de acessos
             </span>
 
-            <h1 className={styles.title}>
+            <h1
+              className={
+                styles.title
+              }
+            >
               Dispositivos
             </h1>
 
-            <p className={styles.subtitle}>
-              Acompanhe celulares, navegadores
-              e aparelhos vinculados aos
-              usuários dos seus aplicativos.
+            <p
+              className={
+                styles.subtitle
+              }
+            >
+              Acompanhe celulares,
+              navegadores e aparelhos
+              vinculados aos usuários
+              dos seus aplicativos.
             </p>
           </div>
         </div>
 
-        <div className={styles.headerStatus}>
-          <ShieldCheck size={18} />
+        <div
+          className={
+            styles.headerStatus
+          }
+        >
+          <ShieldCheck
+            size={19}
+          />
 
           <div>
             <strong>
@@ -170,12 +530,24 @@ export default async function DevicesPage() {
         </div>
       </section>
 
-      <section className={styles.summaryGrid}>
-        <div className={styles.summaryCard}>
+      {/* ===================================================
+          RESUMO
+      =================================================== */}
+
+      <section
+        className={
+          styles.summaryGrid
+        }
+      >
+        <div
+          className={`${styles.summaryCard} ${styles.totalCard}`}
+        >
           <div
             className={`${styles.summaryIcon} ${styles.totalIcon}`}
           >
-            <MonitorSmartphone size={20} />
+            <MonitorSmartphone
+              size={21}
+            />
           </div>
 
           <div>
@@ -191,11 +563,15 @@ export default async function DevicesPage() {
           </div>
         </div>
 
-        <div className={styles.summaryCard}>
+        <div
+          className={`${styles.summaryCard} ${styles.activeCard}`}
+        >
           <div
             className={`${styles.summaryIcon} ${styles.activeIcon}`}
           >
-            <ShieldCheck size={20} />
+            <ShieldCheck
+              size={21}
+            />
           </div>
 
           <div>
@@ -211,15 +587,21 @@ export default async function DevicesPage() {
           </div>
         </div>
 
-        <div className={styles.summaryCard}>
+        <div
+          className={`${styles.summaryCard} ${styles.blockedCard}`}
+        >
           <div
             className={`${styles.summaryIcon} ${styles.blockedIcon}`}
           >
-            <Ban size={20} />
+            <Ban
+              size={21}
+            />
           </div>
 
           <div>
-            <span>Bloqueados</span>
+            <span>
+              Bloqueados
+            </span>
 
             <strong>
               {blockedDevices}
@@ -231,15 +613,21 @@ export default async function DevicesPage() {
           </div>
         </div>
 
-        <div className={styles.summaryCard}>
+        <div
+          className={`${styles.summaryCard} ${styles.recentCard}`}
+        >
           <div
             className={`${styles.summaryIcon} ${styles.recentIcon}`}
           >
-            <Clock3 size={20} />
+            <Clock3
+              size={21}
+            />
           </div>
 
           <div>
-            <span>Recentes</span>
+            <span>
+              Recentes
+            </span>
 
             <strong>
               {recentDevices}
@@ -252,10 +640,26 @@ export default async function DevicesPage() {
         </div>
       </section>
 
-      <section className={styles.card}>
-        <div className={styles.cardHeader}>
+      {/* ===================================================
+          CARD PRINCIPAL
+      =================================================== */}
+
+      <section
+        className={
+          styles.card
+        }
+      >
+        <div
+          className={
+            styles.cardHeader
+          }
+        >
           <div>
-            <span className={styles.eyebrow}>
+            <span
+              className={
+                styles.eyebrow
+              }
+            >
               Segurança
             </span>
 
@@ -264,236 +668,541 @@ export default async function DevicesPage() {
             </h2>
 
             <p>
-              Consulte usuário, aplicativo,
-              último acesso e situação de cada
+              Consulte usuário,
+              aplicativo, último acesso
+              e situação de cada
               dispositivo.
             </p>
           </div>
 
-          <div className={styles.cardSummary}>
+          <div
+            className={
+              styles.cardSummary
+            }
+          >
             <span>
-              <Users size={14} />
+              <Users
+                size={14}
+              />
+
               {uniqueUsers} usuários
             </span>
 
             <span>
-              <AppWindow size={14} />
+              <AppWindow
+                size={14}
+              />
+
               {uniqueProjects} projetos
             </span>
           </div>
         </div>
 
+        {/* =================================================
+            BUSCA / FILTRO / CLASSIFICAÇÃO
+        ================================================= */}
+
+        {devices.length > 0 && (
+          <div
+            className={
+              styles.filterArea
+            }
+          >
+            <form
+              method="get"
+              className={
+                styles.filterForm
+              }
+            >
+              <div
+                className={
+                  styles.searchField
+                }
+              >
+                <span>
+                  Buscar dispositivo
+                </span>
+
+                <div
+                  className={
+                    styles.searchInput
+                  }
+                >
+                  <Search
+                    size={17}
+                  />
+
+                  <input
+                    type="search"
+                    name="q"
+                    defaultValue={
+                      search
+                    }
+                    placeholder="Dispositivo, usuário, ID ou projeto..."
+                  />
+                </div>
+              </div>
+
+              <label
+                className={
+                  styles.filterField
+                }
+              >
+                <span>
+                  Situação
+                </span>
+
+                <select
+                  name="status"
+                  defaultValue={
+                    statusFilter
+                  }
+                >
+                  <option value="all">
+                    Todos
+                  </option>
+
+                  <option value="active">
+                    Ativos
+                  </option>
+
+                  <option value="blocked">
+                    Bloqueados
+                  </option>
+
+                  <option value="recent">
+                    Acesso recente
+                  </option>
+
+                  <option value="never">
+                    Nunca acessaram
+                  </option>
+                </select>
+              </label>
+
+              <label
+                className={
+                  styles.filterField
+                }
+              >
+                <span>
+                  Classificar
+                </span>
+
+                <div
+                  className={
+                    styles.sortInput
+                  }
+                >
+                  <ArrowUpDown
+                    size={15}
+                  />
+
+                  <select
+                    name="sort"
+                    defaultValue={
+                      sort
+                    }
+                  >
+                    <option value="access_desc">
+                      Acesso mais recente
+                    </option>
+
+                    <option value="access_asc">
+                      Acesso mais antigo
+                    </option>
+
+                    <option value="device_asc">
+                      Dispositivo A → Z
+                    </option>
+
+                    <option value="device_desc">
+                      Dispositivo Z → A
+                    </option>
+
+                    <option value="user_asc">
+                      Usuário A → Z
+                    </option>
+
+                    <option value="user_desc">
+                      Usuário Z → A
+                    </option>
+
+                    <option value="project_asc">
+                      Projeto A → Z
+                    </option>
+
+                    <option value="project_desc">
+                      Projeto Z → A
+                    </option>
+                  </select>
+                </div>
+              </label>
+
+              <div
+                className={
+                  styles.filterActions
+                }
+              >
+                <button
+                  type="submit"
+                  className={
+                    styles.applyButton
+                  }
+                >
+                  Aplicar
+                </button>
+
+                {hasFilters && (
+                  <Link
+                    href="/devices"
+                    className={
+                      styles.clearButton
+                    }
+                  >
+                    Limpar
+                  </Link>
+                )}
+              </div>
+            </form>
+
+            <div
+              className={
+                styles.resultInfo
+              }
+            >
+              Exibindo{" "}
+              <strong>
+                {
+                  filteredDevices.length
+                }
+              </strong>{" "}
+              de{" "}
+              <strong>
+                {devices.length}
+              </strong>{" "}
+              dispositivo(s)
+            </div>
+          </div>
+        )}
+
+        {/* =================================================
+            CONTEÚDO
+        ================================================= */}
+
         {devices.length === 0 ? (
-          <div className={styles.empty}>
-            <div className={styles.emptyIcon}>
-              <MonitorSmartphone size={27} />
+          <div
+            className={
+              styles.empty
+            }
+          >
+            <div
+              className={
+                styles.emptyIcon
+              }
+            >
+              <MonitorSmartphone
+                size={27}
+              />
             </div>
 
             <strong>
-              Nenhum dispositivo cadastrado
+              Nenhum dispositivo
+              cadastrado
             </strong>
 
             <span>
-              Os dispositivos aparecerão aqui
-              após o primeiro login em um APK.
+              Os dispositivos
+              aparecerão aqui após o
+              primeiro login em um APK.
             </span>
           </div>
-        ) : (
-          <div className={styles.table}>
-            <div className={styles.tableHeader}>
-              <span>Dispositivo</span>
-              <span>Usuário</span>
-              <span>Projeto</span>
-              <span>Último acesso</span>
-              <span>Status</span>
-              <span>Ações</span>
+        ) : filteredDevices.length ===
+          0 ? (
+          <div
+            className={
+              styles.empty
+            }
+          >
+            <div
+              className={
+                styles.emptyIcon
+              }
+            >
+              <Search
+                size={26}
+              />
             </div>
 
-            <div className={styles.tableBody}>
-              {devices.map((device) => (
-                <div
-                  key={device.id}
-                  className={styles.tableRow}
-                >
-                  <div
-                    className={
-                      styles.deviceCell
-                    }
-                  >
-                    <div
-                      className={
-                        styles.deviceAvatar
-                      }
-                    >
-                      <MonitorSmartphone
-                        size={18}
-                      />
-                    </div>
+            <strong>
+              Nenhum dispositivo
+              encontrado
+            </strong>
 
-                    <div
-                      className={
-                        styles.deviceInfo
-                      }
-                    >
-                      <strong>
-                        {device.deviceName ||
-                          "Sem nome"}
-                      </strong>
+            <span>
+              Altere o termo de busca
+              ou os filtros
+              selecionados.
+            </span>
 
-                      <small>
-                        {device.deviceId}
-                      </small>
-                    </div>
-                  </div>
+            <Link
+              href="/devices"
+              className={
+                styles.emptyButton
+              }
+            >
+              Limpar filtros
+            </Link>
+          </div>
+        ) : (
+          <div
+            className={
+              styles.table
+            }
+          >
+            <div
+              className={
+                styles.tableHeader
+              }
+            >
+              <span>
+                Dispositivo
+              </span>
 
-                  <div
-                    className={
-                      styles.dataCell
-                    }
-                    data-label="Usuário"
-                  >
-                    <strong
-                      className={
-                        styles.userName
-                      }
-                    >
-                      {
-                        device.apkUser
-                          .name
-                      }
-                    </strong>
+              <span>
+                Usuário
+              </span>
 
-                    <small
-                      className={
-                        styles.userLogin
-                      }
-                    >
-                      @
-                      {
-                        device.apkUser
-                          .username
-                      }
-                    </small>
-                  </div>
+              <span>
+                Projeto
+              </span>
 
-                  <div
-                    className={
-                      styles.dataCell
-                    }
-                    data-label="Projeto"
-                  >
-                    <strong
-                      className={
-                        styles.projectName
-                      }
-                    >
-                      {
-                        device.apkUser
-                          .project.name
-                      }
-                    </strong>
+              <span>
+                Último acesso
+              </span>
 
-                    <small
-                      className={
-                        styles.projectSlug
-                      }
-                    >
-                      {
-                        device.apkUser
-                          .project.slug
-                      }
-                    </small>
-                  </div>
+              <span>
+                Status
+              </span>
 
-                  <div
-                    className={
-                      styles.dataCell
-                    }
-                    data-label="Último acesso"
-                  >
-                    <span
-                      className={
-                        styles.accessDate
-                      }
-                    >
-                      {formatDate(
-                        device.lastAccessAt,
-                      )}
-                    </span>
+              <span>
+                Ações
+              </span>
+            </div>
 
-                    {accessedRecently(
+            <div
+              className={
+                styles.tableBody
+              }
+            >
+              {filteredDevices.map(
+                (device) => {
+                  const recent =
+                    accessedRecently(
                       device.lastAccessAt,
-                    ) && (
-                        <small
+                    );
+
+                  return (
+                    <div
+                      key={device.id}
+                      className={`${styles.tableRow} ${device.active
+                          ? styles.rowActive
+                          : styles.rowInactive
+                        }`}
+                    >
+                      <div
+                        className={
+                          styles.deviceCell
+                        }
+                      >
+                        <div
                           className={
-                            styles.recentAccess
+                            styles.deviceAvatar
                           }
                         >
-                          Acesso recente
+                          <MonitorSmartphone
+                            size={
+                              18
+                            }
+                          />
+                        </div>
+
+                        <div
+                          className={
+                            styles.deviceInfo
+                          }
+                        >
+                          <strong>
+                            {device.deviceName ||
+                              "Sem nome"}
+                          </strong>
+
+                          <small>
+                            {
+                              device.deviceId
+                            }
+                          </small>
+                        </div>
+                      </div>
+
+                      <div
+                        className={
+                          styles.dataCell
+                        }
+                        data-label="Usuário"
+                      >
+                        <strong
+                          className={
+                            styles.userName
+                          }
+                        >
+                          {
+                            device.apkUser
+                              .name
+                          }
+                        </strong>
+
+                        <small
+                          className={
+                            styles.userLogin
+                          }
+                        >
+                          @
+                          {
+                            device.apkUser
+                              .username
+                          }
                         </small>
-                      )}
-                  </div>
+                      </div>
 
-                  <div
-                    className={
-                      styles.statusCell
-                    }
-                    data-label="Status"
-                  >
-                    <span
-                      className={
-                        device.active
-                          ? styles.active
-                          : styles.inactive
-                      }
-                    >
-                      <i />
+                      <div
+                        className={
+                          styles.dataCell
+                        }
+                        data-label="Projeto"
+                      >
+                        <strong
+                          className={
+                            styles.projectName
+                          }
+                        >
+                          {
+                            device.apkUser
+                              .project.name
+                          }
+                        </strong>
 
-                      {device.active
-                        ? "Ativo"
-                        : "Bloqueado"}
-                    </span>
-                  </div>
+                        <small
+                          className={
+                            styles.projectSlug
+                          }
+                        >
+                          {
+                            device.apkUser
+                              .project.slug
+                          }
+                        </small>
+                      </div>
 
-                  <div
-                    className={
-                      styles.actions
-                    }
-                    data-label="Ações"
-                  >
-                    <Link
-                      href={`/apk-users/${device.apkUser.id}`}
-                      className={
-                        styles.viewButton
-                      }
-                      title="Ver usuário"
-                      aria-label="Ver usuário"
-                    >
-                      <Eye
-                        size={17}
-                        strokeWidth={2.3}
-                      />
-                    </Link>
+                      <div
+                        className={
+                          styles.dataCell
+                        }
+                        data-label="Último acesso"
+                      >
+                        <span
+                          className={
+                            styles.accessDate
+                          }
+                        >
+                          {formatDate(
+                            device.lastAccessAt,
+                          )}
+                        </span>
 
-                    <ToggleDeviceStatusButton
-                      deviceId={device.id}
-                      active={device.active}
-                      deviceName={
-                        device.deviceName ||
-                        device.deviceId
-                      }
-                    />
+                        {recent && (
+                          <small
+                            className={
+                              styles.recentAccess
+                            }
+                          >
+                            Acesso recente
+                          </small>
+                        )}
+                      </div>
 
-                    <DeleteDeviceButton
-                      deviceId={device.id}
-                      deviceName={
-                        device.deviceName ||
-                        device.deviceId
-                      }
-                    />
-                  </div>
-                </div>
-              ))}
+                      <div
+                        className={
+                          styles.statusCell
+                        }
+                        data-label="Status"
+                      >
+                        <span
+                          className={
+                            device.active
+                              ? styles.active
+                              : styles.inactive
+                          }
+                        >
+                          <i />
+
+                          {device.active
+                            ? "Ativo"
+                            : "Bloqueado"}
+                        </span>
+                      </div>
+
+                      <div
+                        className={
+                          styles.actions
+                        }
+                        data-label="Ações"
+                      >
+                        <Link
+                          href={`/apk-users/${device.apkUser.id}`}
+                          className={
+                            styles.viewButton
+                          }
+                          title="Ver usuário"
+                          aria-label="Ver usuário"
+                        >
+                          <Eye
+                            size={
+                              17
+                            }
+                            strokeWidth={
+                              2.3
+                            }
+                          />
+                        </Link>
+
+                        <ToggleDeviceStatusButton
+                          deviceId={
+                            device.id
+                          }
+                          active={
+                            device.active
+                          }
+                          deviceName={
+                            device.deviceName ||
+                            device.deviceId
+                          }
+                        />
+
+                        <DeleteDeviceButton
+                          deviceId={
+                            device.id
+                          }
+                          deviceName={
+                            device.deviceName ||
+                            device.deviceId
+                          }
+                        />
+                      </div>
+                    </div>
+                  );
+                },
+              )}
             </div>
           </div>
         )}

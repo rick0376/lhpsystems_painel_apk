@@ -1,114 +1,349 @@
 // src/app/(private)/projects/[id]/permissions/styles.module.scss
 
+/* =========================================================
+   CABEÇALHO
+========================================================= */
+
 .header {
+    position: relative;
+    overflow: hidden;
+
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
-    gap: 24px;
-    margin-bottom: 24px;
+
+    gap: 26px;
+
+    margin-bottom: 20px;
+    padding: 28px 30px;
+
+    border: 1px solid #344158;
+    border-radius: 24px;
+
+    background:
+        radial-gradient(circle at 0% 0%,
+            rgba(245, 179, 1, 0.2),
+            transparent 34%),
+        radial-gradient(circle at 92% 20%,
+            rgba(59, 130, 246, 0.06),
+            transparent 30%),
+        linear-gradient(135deg,
+            #151d2a,
+            #0b111b 72%);
+
+    box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.18);
+
+    &::before {
+        content: "";
+
+        position: absolute;
+
+        top: 0;
+        left: 30px;
+
+        width: 190px;
+        height: 3px;
+
+        border-radius:
+            0 0 999px 999px;
+
+        background:
+            linear-gradient(90deg,
+                #f5b301,
+                rgba(245, 179, 1, 0.08));
+    }
+
+    &::after {
+        content: "";
+
+        position: absolute;
+
+        width: 240px;
+        height: 240px;
+
+        right: -120px;
+        bottom: -165px;
+
+        border-radius: 50%;
+
+        border:
+            1px solid rgba(245, 179, 1, 0.1);
+    }
+
+    >div {
+        position: relative;
+        z-index: 1;
+    }
 
     h1 {
         margin: 0;
-        color: #fff;
-        font-size: 36px;
+
+        color: #ffffff;
+
+        font-size: 40px;
+        line-height: 1.05;
+
         font-weight: 950;
+
+        letter-spacing: -0.04em;
+
+        overflow-wrap: anywhere;
+
+        text-shadow:
+            0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
     p {
-        margin: 8px 0 0;
-        color: #9ca3af;
-        font-size: 14px;
+        max-width: 680px;
+
+        margin: 10px 0 0;
+
+        color: #b5c0d1;
+
+        font-size: 13px;
+        line-height: 1.65;
     }
 }
 
 .badge {
+    min-height: 29px;
+
+    padding: 0 12px;
+    margin-bottom: 11px;
+
     display: inline-flex;
-    margin-bottom: 10px;
-    padding: 7px 11px;
+    align-items: center;
+
     border-radius: 999px;
-    color: #f5b301;
-    background: rgba(245, 179, 1, 0.12);
-    font-size: 11px;
-    font-weight: 900;
+
+    border:
+        1px solid rgba(245, 179, 1, 0.35);
+
+    background:
+        rgba(245, 179, 1, 0.13);
+
+    color: #ffc42e;
+
+    font-size: 10px;
+    font-weight: 950;
+
     text-transform: uppercase;
+
+    letter-spacing: 0.09em;
 }
 
+/* =========================================================
+   VOLTAR
+========================================================= */
+
 .backButton {
-    height: 42px;
-    padding: 0 18px;
+    position: relative;
+    z-index: 2;
+
+    min-height: 42px;
+
+    padding: 0 17px;
+
+    flex-shrink: 0;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #2a3142;
-    border-radius: 999px;
-    color: #fff;
-    background: #111827;
+
+    border:
+        1px solid #46536a;
+
+    border-radius: 11px;
+
+    background:
+        rgba(148, 163, 184, 0.07);
+
+    color: #dbe3ed;
+
     text-decoration: none;
-    font-weight: 800;
+
+    font-size: 11px;
+    font-weight: 900;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
 
     &:hover {
-        border-color: #f5b301;
-        color: #f5b301;
+        transform:
+            translateY(-2px);
+
+        border-color: #718096;
+
+        background:
+            rgba(148, 163, 184, 0.13);
+
+        color: #ffffff;
     }
 }
 
+/* =========================================================
+   CARDS PRINCIPAIS
+========================================================= */
+
 .formCard,
 .listCard {
-    padding: 24px;
-    margin-bottom: 18px;
-    border: 1px solid #252c3e;
-    border-radius: 24px;
-    background: #121826;
+    position: relative;
+    overflow: hidden;
+
+    padding: 26px;
+
+    margin-bottom: 20px;
+
+    border:
+        1px solid #344158;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(180deg,
+            #111927,
+            #0b121c);
+
+    box-shadow:
+        0 13px 32px rgba(0, 0, 0, 0.13);
+
+    &::before {
+        content: "";
+
+        position: absolute;
+
+        top: 0;
+        left: 26px;
+
+        width: 170px;
+        height: 3px;
+
+        border-radius:
+            0 0 999px 999px;
+
+        background:
+            linear-gradient(90deg,
+                rgba(245, 179, 1, 0.85),
+                rgba(245, 179, 1, 0.05));
+    }
 }
 
+/* =========================================================
+   TÍTULOS DAS SEÇÕES
+========================================================= */
+
 .sectionHeader {
-    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+
+    padding-bottom: 19px;
+    margin-bottom: 22px;
+
+    border-bottom:
+        1px solid #344158;
 
     h2 {
         margin: 0 0 6px;
-        color: #fff;
-        font-size: 21px;
+
+        color: #ffffff;
+
+        font-size: 20px;
+        font-weight: 950;
+
+        letter-spacing: -0.02em;
     }
 
     p {
         margin: 0;
-        color: #9ca3af;
-        font-size: 13px;
+
+        color: #95a2b5;
+
+        font-size: 11px;
+        line-height: 1.55;
     }
 }
 
+/* =========================================================
+   FORMULÁRIO
+========================================================= */
+
 .form {
+    position: relative;
+    z-index: 1;
+
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+
+    grid-template-columns:
+        repeat(2,
+            minmax(0, 1fr));
+
+    gap: 18px;
 
     label {
-        display: grid;
+        min-width: 0;
+
+        display: flex;
+        flex-direction: column;
+
         gap: 8px;
 
         span {
-            color: #cbd5e1;
-            font-size: 12px;
-            font-weight: 800;
+            color: #e2e8f0;
+
+            font-size: 11px;
+            font-weight: 900;
         }
     }
 
     input {
         width: 100%;
-        min-height: 48px;
-        padding: 0 14px;
-        border: 1px solid #2a3142;
-        border-radius: 13px;
-        outline: none;
-        color: #fff;
-        background: #0d121d;
+        min-height: 52px;
 
-        &:focus {
-            border-color: #f5b301;
-        }
+        padding: 0 15px;
+
+        border:
+            1px solid #3b485d;
+
+        border-radius: 12px;
+
+        outline: none;
+
+        background: #0d1521;
+
+        color: #ffffff;
+
+        font-size: 12px;
+        font-weight: 700;
+
+        transition:
+            border-color 0.2s ease,
+            background 0.2s ease,
+            box-shadow 0.2s ease;
 
         &::placeholder {
-            color: #626b7b;
+            color: #68758a;
+
+            font-weight: 500;
+        }
+
+        &:hover {
+            border-color: #4c5b73;
+
+            background: #101925;
+        }
+
+        &:focus {
+            border-color:
+                rgba(245, 179, 1, 0.8);
+
+            background: #111a27;
+
+            box-shadow:
+                0 0 0 3px rgba(245, 179, 1, 0.09);
         }
     }
 }
@@ -117,124 +352,328 @@
     grid-column: 1 / -1;
 }
 
+/* =========================================================
+   ERRO
+========================================================= */
+
+.error {
+    grid-column: 1 / -1;
+
+    padding: 14px 16px;
+
+    border:
+        1px solid rgba(239, 68, 68, 0.4);
+
+    border-radius: 12px;
+
+    background:
+        rgba(239, 68, 68, 0.12);
+
+    color: #fca5a5;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+/* =========================================================
+   ADICIONAR PERMISSÃO
+========================================================= */
+
 .actions {
     grid-column: 1 / -1;
+
     display: flex;
     justify-content: flex-end;
 
+    padding-top: 5px;
+
     button {
-        min-height: 44px;
+        min-height: 45px;
+
         padding: 0 18px;
+
         display: inline-flex;
         align-items: center;
+        justify-content: center;
+
         gap: 8px;
-        border: 0;
-        border-radius: 999px;
-        color: #080b10;
-        background: #f5b301;
+
+        border:
+            1px solid rgba(255, 213, 85, 0.7);
+
+        border-radius: 11px;
+
+        background:
+            linear-gradient(135deg,
+                #ffc52c,
+                #e5a000);
+
+        color: #101010;
+
+        font-size: 11px;
+        font-weight: 950;
+
         cursor: pointer;
-        font-weight: 900;
+
+        box-shadow:
+            0 9px 22px rgba(245, 179, 1, 0.16);
+
+        transition:
+            transform 0.2s ease,
+            background 0.2s ease,
+            box-shadow 0.2s ease;
+
+        &:hover:not(:disabled) {
+            transform:
+                translateY(-2px);
+
+            background:
+                linear-gradient(135deg,
+                    #ffd34d,
+                    #f5b301);
+
+            box-shadow:
+                0 13px 28px rgba(245, 179, 1, 0.25);
+        }
 
         &:disabled {
-            opacity: 0.6;
+            opacity: 0.58;
+
             cursor: wait;
         }
     }
 }
 
-.error {
-    grid-column: 1 / -1;
-    padding: 12px 14px;
-    border: 1px solid rgba(239, 68, 68, 0.28);
-    border-radius: 12px;
-    color: #fecaca;
-    background: rgba(127, 29, 29, 0.2);
-}
+/* =========================================================
+   GRID DAS PERMISSÕES
+========================================================= */
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    grid-template-columns:
+        repeat(2,
+            minmax(0, 1fr));
+
     gap: 12px;
 }
 
+/* =========================================================
+   CARD DA PERMISSÃO
+========================================================= */
+
 .permission {
-    min-height: 120px;
+    position: relative;
+    overflow: hidden;
+
+    min-width: 0;
+    min-height: 125px;
+
     padding: 17px;
+
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 14px;
-    border: 1px solid #252c3e;
-    border-radius: 16px;
-    background: #0d121d;
+
+    gap: 15px;
+
+    border:
+        1px solid #354258;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(145deg,
+            #111927,
+            #0d141e);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+
+    &::before {
+        content: "";
+
+        position: absolute;
+
+        top: 15px;
+        bottom: 15px;
+        left: 0;
+
+        width: 3px;
+
+        border-radius:
+            0 999px 999px 0;
+
+        background: #f5b301;
+    }
+
+    &:hover {
+        transform:
+            translateY(-2px);
+
+        border-color:
+            rgba(245, 179, 1, 0.5);
+
+        background:
+            linear-gradient(145deg,
+                #162131,
+                #101824);
+
+        box-shadow:
+            0 10px 26px rgba(0, 0, 0, 0.15);
+    }
+
+    >div {
+        min-width: 0;
+    }
 
     strong {
         display: block;
+
         margin-bottom: 8px;
-        color: #fff;
-        font-size: 14px;
+
+        color: #f7f9fc;
+
+        font-size: 13px;
+        font-weight: 900;
     }
 
     code {
         display: inline-block;
-        padding: 4px 7px;
+
+        max-width: 100%;
+
+        padding: 5px 8px;
+
+        border:
+            1px solid rgba(245, 179, 1, 0.2);
+
         border-radius: 7px;
-        color: #f5b301;
-        background: rgba(245, 179, 1, 0.09);
-        font-size: 11px;
+
+        background:
+            rgba(245, 179, 1, 0.1);
+
+        color: #ffc42e;
+
+        font-size: 10px;
+        font-weight: 850;
+
+        word-break: break-all;
     }
 
     p {
         margin: 9px 0 0;
-        color: #9ca3af;
-        font-size: 12px;
-        line-height: 1.5;
+
+        color: #929fb2;
+
+        font-size: 10px;
+        line-height: 1.55;
     }
 }
+
+/* =========================================================
+   STATUS
+========================================================= */
 
 .active,
 .inactive {
+    min-width: 70px;
+    min-height: 29px;
+
+    padding: 0 10px;
+
     flex-shrink: 0;
-    padding: 6px 10px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     border-radius: 999px;
-    font-size: 11px;
-    font-weight: 900;
+
+    font-size: 9px;
+    font-weight: 950;
 }
 
 .active {
-    color: #22c55e;
-    background: rgba(34, 197, 94, 0.14);
+    color: #4ade80;
+
+    border:
+        1px solid rgba(34, 197, 94, 0.2);
+
+    background:
+        rgba(34, 197, 94, 0.13);
+
+    box-shadow:
+        inset 0 0 14px rgba(34, 197, 94, 0.025);
 }
 
 .inactive {
-    color: #ef4444;
-    background: rgba(239, 68, 68, 0.14);
+    color: #f87171;
+
+    border:
+        1px solid rgba(239, 68, 68, 0.2);
+
+    background:
+        rgba(239, 68, 68, 0.13);
 }
 
+/* =========================================================
+   SEM PERMISSÕES
+========================================================= */
+
 .empty {
-    min-height: 100px;
+    min-height: 150px;
+
+    padding: 25px;
+
     display: grid;
     place-items: center;
-    padding: 20px;
-    border: 1px dashed #2a3142;
+
+    border:
+        1px dashed #42506a;
+
     border-radius: 16px;
-    color: #9ca3af;
+
+    background:
+        rgba(255, 255, 255, 0.018);
+
+    color: #8f9caf;
+
     text-align: center;
+
+    font-size: 11px;
+    font-weight: 700;
 }
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
 
 @media (max-width: 800px) {
     .header {
+        padding: 21px;
+
         align-items: stretch;
         flex-direction: column;
+
+        border-radius: 20px;
+
+        h1 {
+            font-size: 32px;
+        }
     }
 
     .backButton {
-        align-self: flex-start;
+        width: 100%;
     }
 
     .form,
     .grid {
-        grid-template-columns: 1fr;
+        grid-template-columns:
+            1fr;
     }
 
     .full,
@@ -248,20 +687,35 @@
 
     .formCard,
     .listCard {
-        padding: 18px;
-        border-radius: 20px;
+        padding: 19px;
+
+        border-radius: 19px;
     }
 
-    .header h1 {
-        font-size: 30px;
+    .header {
+        h1 {
+            font-size: 29px;
+        }
+
+        p {
+            font-size: 12px;
+        }
     }
 
     .permission {
         flex-direction: column;
     }
 
-    .actions button {
-        width: 100%;
-        justify-content: center;
+    .actions {
+        button {
+            width: 100%;
+
+            justify-content: center;
+        }
+    }
+
+    .active,
+    .inactive {
+        align-self: flex-start;
     }
 }

@@ -1,43 +1,92 @@
-// src/app/(private)/apk-users/[id]/edit/styles.module.scss 
+// src/app/(private)/apk-users/[id]/edit/styles.module.scss
+
+/* =========================================================
+   CABEÇALHO
+========================================================= */
 
 .header {
   position: relative;
+  overflow: hidden;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  gap: 24px;
+  gap: 26px;
 
-  margin-bottom: 18px;
-  padding: 24px 26px;
+  margin-bottom: 20px;
+  padding: 28px 30px;
 
-  overflow: hidden;
-
-  border: 1px solid #252d3f;
+  border: 1px solid #344158;
   border-radius: 24px;
 
   background:
     radial-gradient(circle at 0% 0%,
-      rgba(59, 130, 246, 0.11),
-      transparent 32%),
+      rgba(59, 130, 246, 0.2),
+      transparent 34%),
+    radial-gradient(circle at 72% 0%,
+      rgba(245, 179, 1, 0.06),
+      transparent 30%),
     linear-gradient(135deg,
-      #111824,
-      #0c121c);
+      #151d2a,
+      #0b111b 72%);
+
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.18);
+
+  &::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 30px;
+
+    width: 200px;
+    height: 3px;
+
+    border-radius:
+      0 0 999px 999px;
+
+    background:
+      linear-gradient(90deg,
+        #3b82f6,
+        rgba(59, 130, 246, 0.05));
+  }
+
+  &::after {
+    content: "";
+
+    position: absolute;
+
+    width: 250px;
+    height: 250px;
+
+    right: -125px;
+    bottom: -170px;
+
+    border-radius: 50%;
+
+    border:
+      1px solid rgba(59, 130, 246, 0.1);
+  }
 }
 
 .headerMain {
+  position: relative;
+  z-index: 1;
+
   min-width: 0;
 
   display: flex;
   align-items: center;
 
-  gap: 15px;
+  gap: 18px;
 }
 
 .headerIcon {
-  width: 52px;
-  height: 52px;
+  width: 58px;
+  height: 58px;
 
   flex-shrink: 0;
 
@@ -45,36 +94,43 @@
   align-items: center;
   justify-content: center;
 
-  border: 1px solid rgba(59, 130, 246, 0.18);
+  border:
+    1px solid rgba(59, 130, 246, 0.35);
 
   border-radius: 16px;
 
   background:
-    rgba(59, 130, 246, 0.08);
+    linear-gradient(145deg,
+      rgba(59, 130, 246, 0.2),
+      rgba(59, 130, 246, 0.08));
 
   color: #60a5fa;
+
+  box-shadow:
+    0 9px 24px rgba(59, 130, 246, 0.08);
 }
 
 .badge {
-  min-height: 25px;
+  min-height: 29px;
 
-  padding: 0 10px;
-  margin-bottom: 8px;
+  padding: 0 12px;
+  margin-bottom: 10px;
 
   display: inline-flex;
   align-items: center;
 
-  border: 1px solid rgba(245, 179, 1, 0.14);
+  border:
+    1px solid rgba(245, 179, 1, 0.35);
 
   border-radius: 999px;
 
   background:
-    rgba(245, 179, 1, 0.08);
+    rgba(245, 179, 1, 0.13);
 
-  color: #f5b301;
+  color: #ffc42e;
 
   font-size: 9px;
-  font-weight: 900;
+  font-weight: 950;
 
   text-transform: uppercase;
   letter-spacing: 0.09em;
@@ -85,61 +141,76 @@
 
   color: #ffffff;
 
-  font-size: 34px;
+  font-size: 38px;
   line-height: 1.05;
+
   font-weight: 950;
 
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
 
   overflow-wrap: anywhere;
+
+  text-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .subtitle {
-  max-width: 650px;
+  max-width: 700px;
 
-  margin: 8px 0 0;
+  margin: 9px 0 0;
 
-  color: #8995a7;
+  color: #b3bece;
 
-  font-size: 12px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.65;
 }
 
 .backButton {
-  min-height: 39px;
+  position: relative;
+  z-index: 2;
 
-  padding: 0 14px;
+  min-height: 42px;
+
+  padding: 0 16px;
 
   flex-shrink: 0;
-
-  border: 1px solid #2a3346;
-  border-radius: 11px;
-
-  background: #111824;
-
-  color: #d0d6e0;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  gap: 7px;
+  gap: 8px;
+
+  border: 1px solid #46536a;
+  border-radius: 11px;
+
+  background:
+    rgba(148, 163, 184, 0.07);
+
+  color: #d7dee8;
 
   font-size: 11px;
   font-weight: 900;
 
-  transition: 0.2s ease;
+  text-decoration: none;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
 
   &:hover {
     transform: translateY(-2px);
 
-    border-color:
-      rgba(245, 179, 1, 0.45);
+    border-color: #718096;
 
-    color: #f5b301;
+    background:
+      rgba(148, 163, 184, 0.13);
+
+    color: #ffffff;
   }
 }
-
 
 /* =========================================================
    FORMULÁRIO
@@ -151,27 +222,82 @@
   display: flex;
   flex-direction: column;
 
-  gap: 18px;
+  gap: 20px;
 }
 
-.formSection {
-  padding: 23px;
+/* =========================================================
+   SEÇÕES
+========================================================= */
 
-  border: 1px solid #242c3d;
+.formSection {
+  position: relative;
+  overflow: hidden;
+
+  padding: 26px;
+
+  border: 1px solid #344158;
   border-radius: 22px;
 
   background:
     linear-gradient(180deg,
-      #0e141f,
-      #0a1018);
+      #111927,
+      #0b121c);
+
+  box-shadow:
+    0 13px 32px rgba(0, 0, 0, 0.13);
+
+  &::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 26px;
+
+    width: 170px;
+    height: 3px;
+
+    border-radius:
+      0 0 999px 999px;
+
+    background:
+      linear-gradient(90deg,
+        #3b82f6,
+        rgba(59, 130, 246, 0.04));
+  }
+
+  &:nth-of-type(2)::before {
+    background:
+      linear-gradient(90deg,
+        #22c55e,
+        rgba(34, 197, 94, 0.04));
+  }
+
+  &:nth-of-type(3)::before {
+    background:
+      linear-gradient(90deg,
+        #f5b301,
+        rgba(245, 179, 1, 0.04));
+  }
+
+  &:nth-of-type(4)::before {
+    background:
+      linear-gradient(90deg,
+        #a855f7,
+        rgba(168, 85, 247, 0.04));
+  }
 }
+
+/* =========================================================
+   CABEÇALHO DAS SEÇÕES
+========================================================= */
 
 .sectionHeader,
 .sectionHeaderSimple {
   display: flex;
   align-items: center;
 
-  gap: 12px;
+  gap: 13px;
 
   >div:last-child {
     min-width: 0;
@@ -180,21 +306,21 @@
   >div:last-child>span {
     display: block;
 
-    color: #677387;
+    color: #8d9aad;
 
-    font-size: 8px;
-    font-weight: 900;
+    font-size: 9px;
+    font-weight: 950;
 
     text-transform: uppercase;
-    letter-spacing: 0.11em;
+    letter-spacing: 0.12em;
   }
 
   h2 {
-    margin: 3px 0 4px;
+    margin: 4px 0 5px;
 
     color: #ffffff;
 
-    font-size: 17px;
+    font-size: 19px;
     font-weight: 950;
 
     letter-spacing: -0.02em;
@@ -203,24 +329,28 @@
   p {
     margin: 0;
 
-    color: #727e92;
+    color: #929fb2;
 
     font-size: 10px;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 }
 
 .sectionHeader {
-  padding-bottom: 18px;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 22px;
 
   border-bottom:
-    1px solid #242c3d;
+    1px solid #344158;
 }
 
+/* =========================================================
+   ÍCONES DAS SEÇÕES
+========================================================= */
+
 .sectionIcon {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
 
   flex-shrink: 0;
 
@@ -228,48 +358,64 @@
   align-items: center;
   justify-content: center;
 
+  border:
+    1px solid rgba(59, 130, 246, 0.2);
+
   border-radius: 13px;
 
   background:
-    rgba(59, 130, 246, 0.08);
+    rgba(59, 130, 246, 0.13);
 
   color: #60a5fa;
 }
 
 .accessSectionIcon {
-  color: #22c55e;
+  color: #4ade80;
+
+  border-color:
+    rgba(34, 197, 94, 0.2);
 
   background:
-    rgba(34, 197, 94, 0.08);
+    rgba(34, 197, 94, 0.13);
 }
 
 .permissionSectionIcon {
-  color: #f5b301;
+  color: #ffc42e;
+
+  border-color:
+    rgba(245, 179, 1, 0.2);
 
   background:
-    rgba(245, 179, 1, 0.08);
+    rgba(245, 179, 1, 0.13);
 }
 
 .notesSectionIcon {
   color: #c084fc;
 
+  border-color:
+    rgba(168, 85, 247, 0.2);
+
   background:
-    rgba(168, 85, 247, 0.08);
+    rgba(168, 85, 247, 0.13);
 }
 
-
 /* =========================================================
-   CAMPOS
+   GRID
 ========================================================= */
 
 .grid {
   display: grid;
 
   grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+    repeat(2,
+      minmax(0, 1fr));
 
-  gap: 18px;
+  gap: 20px;
 }
+
+/* =========================================================
+   LABELS
+========================================================= */
 
 .label,
 .passwordField {
@@ -278,11 +424,11 @@
   display: flex;
   flex-direction: column;
 
-  gap: 7px;
+  gap: 8px;
 }
 
 .label>span {
-  color: #d3d8e1;
+  color: #e3e8ef;
 
   font-size: 11px;
   font-weight: 900;
@@ -290,11 +436,15 @@
 
 .label>small,
 .passwordField>small {
-  color: #626f84;
+  color: #8491a5;
 
   font-size: 9px;
   line-height: 1.5;
 }
+
+/* =========================================================
+   INPUTS
+========================================================= */
 
 .inputWrapper {
   position: relative;
@@ -305,26 +455,33 @@
 .inputIcon {
   position: absolute;
 
-  left: 14px;
+  left: 15px;
   top: 50%;
+
+  z-index: 2;
 
   transform:
     translateY(-50%);
 
-  color: #5f6c81;
+  color: #8491a5;
 
   pointer-events: none;
 
-  z-index: 2;
+  transition:
+    color 0.2s ease;
+}
+
+.inputWrapper:focus-within .inputIcon {
+  color: #60a5fa;
 }
 
 .input,
 .textarea {
   width: 100%;
 
-  border: 1px solid #293246;
+  border: 1px solid #3b485d;
 
-  background: #0b111a;
+  background: #0d1521;
 
   color: #ffffff;
 
@@ -336,21 +493,23 @@
     box-shadow 0.2s ease;
 
   &::placeholder {
-    color: #4f5b70;
+    color: #68758a;
   }
 
   &:hover {
-    border-color: #364159;
+    border-color: #4b5a72;
+
+    background: #101925;
   }
 
   &:focus {
     border-color:
-      rgba(245, 179, 1, 0.65);
+      rgba(59, 130, 246, 0.75);
 
-    background: #0d131d;
+    background: #111a27;
 
     box-shadow:
-      0 0 0 3px rgba(245, 179, 1, 0.05);
+      0 0 0 3px rgba(59, 130, 246, 0.09);
   }
 
   &:disabled {
@@ -361,55 +520,66 @@
 }
 
 .input {
-  height: 48px;
+  height: 52px;
 
   padding:
-    0 14px 0 43px;
+    0 16px 0 45px;
 
   border-radius: 12px;
 
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 750;
 }
 
 select.input {
   cursor: pointer;
+
+  color-scheme: dark;
+
+  option {
+    background: #111827;
+    color: #ffffff;
+  }
 }
 
 .textarea {
-  min-height: 120px;
+  min-height: 130px;
 
-  padding: 14px;
-
-  resize: vertical;
+  padding: 15px;
 
   border-radius: 13px;
+
+  resize: vertical;
 
   font-size: 12px;
   line-height: 1.65;
 }
 
-
 /* =========================================================
-   STATUS
+   CONTROLE DE ACESSO
 ========================================================= */
 
 .statusBox {
-  min-height: 76px;
+  min-height: 84px;
 
-  margin-top: 18px;
-  padding: 13px 15px;
-
-  border: 1px solid #293246;
-  border-radius: 14px;
-
-  background: #0b111a;
+  margin-top: 20px;
+  padding: 15px 17px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   gap: 16px;
+
+  border:
+    1px solid rgba(34, 197, 94, 0.28);
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(135deg,
+      rgba(34, 197, 94, 0.08),
+      rgba(34, 197, 94, 0.025));
 }
 
 .statusInfo {
@@ -418,14 +588,14 @@ select.input {
   display: flex;
   align-items: center;
 
-  gap: 11px;
+  gap: 12px;
 
   strong {
     display: block;
 
-    margin-bottom: 3px;
+    margin-bottom: 4px;
 
-    color: #e7ebf1;
+    color: #f1f5f9;
 
     font-size: 11px;
     font-weight: 900;
@@ -434,16 +604,16 @@ select.input {
   span {
     display: block;
 
-    color: #687589;
+    color: #8f9caf;
 
     font-size: 9px;
-    line-height: 1.4;
+    line-height: 1.45;
   }
 }
 
 .statusIcon {
-  width: 35px;
-  height: 35px;
+  width: 39px;
+  height: 39px;
 
   flex-shrink: 0;
 
@@ -451,19 +621,26 @@ select.input {
   align-items: center;
   justify-content: center;
 
+  border:
+    1px solid rgba(34, 197, 94, 0.2);
+
   border-radius: 11px;
 
-  color: #22c55e;
-
   background:
-    rgba(34, 197, 94, 0.08);
+    rgba(34, 197, 94, 0.14);
+
+  color: #4ade80;
 }
+
+/* =========================================================
+   SWITCH
+========================================================= */
 
 .switch {
   position: relative;
 
-  width: 46px;
-  height: 25px;
+  width: 50px;
+  height: 27px;
 
   flex-shrink: 0;
 
@@ -486,17 +663,19 @@ select.input {
 
   border-radius: 999px;
 
-  background: #313b4e;
+  background: #394559;
 
-  transition: 0.2s ease;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 
   &::before {
     content: "";
 
     position: absolute;
 
-    width: 19px;
-    height: 19px;
+    width: 21px;
+    height: 21px;
 
     left: 3px;
     top: 3px;
@@ -505,19 +684,25 @@ select.input {
 
     background: #ffffff;
 
-    transition: 0.2s ease;
+    box-shadow:
+      0 2px 7px rgba(0, 0, 0, 0.25);
+
+    transition:
+      transform 0.2s ease;
   }
 }
 
 .switch input:checked+.slider {
   background: #22c55e;
+
+  box-shadow:
+    0 0 12px rgba(34, 197, 94, 0.22);
 }
 
 .switch input:checked+.slider::before {
   transform:
-    translateX(21px);
+    translateX(23px);
 }
-
 
 /* =========================================================
    PERMISSÕES
@@ -528,46 +713,48 @@ select.input {
   align-items: center;
   justify-content: space-between;
 
-  gap: 18px;
+  gap: 20px;
 
-  padding-bottom: 18px;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 22px;
 
   border-bottom:
-    1px solid #242c3d;
+    1px solid #344158;
 }
 
 .permissionCounter {
-  min-width: 105px;
+  min-width: 125px;
 
-  padding: 10px 13px;
+  padding: 11px 14px;
 
   flex-shrink: 0;
-
-  border: 1px solid #293247;
-  border-radius: 12px;
-
-  background:
-    rgba(255, 255, 255, 0.02);
 
   display: flex;
   align-items: baseline;
   justify-content: center;
 
-  gap: 4px;
+  gap: 5px;
+
+  border:
+    1px solid rgba(245, 179, 1, 0.25);
+
+  border-radius: 12px;
+
+  background:
+    rgba(245, 179, 1, 0.08);
 
   strong {
-    color: #f5b301;
+    color: #ffc42e;
 
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 950;
   }
 
   span {
-    color: #687589;
+    color: #998e91;
 
     font-size: 8px;
-    font-weight: 800;
+    font-weight: 850;
   }
 }
 
@@ -575,46 +762,94 @@ select.input {
   display: grid;
 
   grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+    repeat(2,
+      minmax(0, 1fr));
 
-  gap: 10px;
+  gap: 12px;
 }
 
 .permissionItem {
-  min-width: 0;
-  min-height: 96px;
+  position: relative;
+  overflow: hidden;
 
-  padding: 13px;
+  min-width: 0;
+  min-height: 110px;
+
+  padding: 15px;
 
   display: flex;
   align-items: flex-start;
 
-  gap: 11px;
+  gap: 12px;
 
-  border: 1px solid #232c3d;
+  border: 1px solid #354258;
   border-radius: 15px;
 
-  background: #0c121b;
+  background:
+    linear-gradient(145deg,
+      #111927,
+      #0d141e);
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &::before {
+    content: "";
+
+    position: absolute;
+
+    top: 14px;
+    bottom: 14px;
+    left: 0;
+
+    width: 3px;
+
+    border-radius:
+      0 999px 999px 0;
+
+    background: #ef4444;
+
+    transition:
+      background 0.2s ease,
+      box-shadow 0.2s ease;
+  }
 
   &:hover {
-    border-color: #374258;
+    transform: translateY(-2px);
 
-    background: #0f151f;
+    border-color:
+      rgba(245, 179, 1, 0.4);
+
+    background:
+      linear-gradient(145deg,
+        #162131,
+        #101824);
+
+    box-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.14);
   }
 }
 
 .permissionItemActive {
   border-color:
-    rgba(34, 197, 94, 0.24);
+    rgba(34, 197, 94, 0.35);
 
   background:
     linear-gradient(145deg,
-      rgba(34, 197, 94, 0.035),
-      #0c121b);
+      rgba(34, 197, 94, 0.07),
+      #0d141e);
+
+  &::before {
+    background: #22c55e;
+
+    box-shadow:
+      0 0 10px rgba(34, 197, 94, 0.45);
+  }
 }
 
 .permissionCheck {
@@ -623,12 +858,12 @@ select.input {
   flex-shrink: 0;
 
   input {
-    width: 17px;
-    height: 17px;
+    width: 18px;
+    height: 18px;
 
     cursor: pointer;
 
-    accent-color: #f5b301;
+    accent-color: #22c55e;
   }
 }
 
@@ -639,9 +874,9 @@ select.input {
   strong {
     display: block;
 
-    margin-bottom: 5px;
+    margin-bottom: 6px;
 
-    color: #eef1f5;
+    color: #f4f7fa;
 
     font-size: 11px;
     font-weight: 900;
@@ -650,17 +885,22 @@ select.input {
   code {
     display: inline-block;
 
-    padding: 3px 6px;
+    max-width: 100%;
 
-    border-radius: 6px;
+    padding: 4px 7px;
+
+    border:
+      1px solid rgba(245, 179, 1, 0.18);
+
+    border-radius: 7px;
 
     background:
-      rgba(245, 179, 1, 0.07);
+      rgba(245, 179, 1, 0.09);
 
-    color: #f5b301;
+    color: #ffc42e;
 
     font-size: 8px;
-    font-weight: 800;
+    font-weight: 850;
 
     word-break: break-all;
   }
@@ -668,23 +908,27 @@ select.input {
   small {
     display: block;
 
-    margin-top: 6px;
+    margin-top: 7px;
 
-    color: #707c90;
+    color: #8c99ac;
 
     font-size: 9px;
-    line-height: 1.45;
+    line-height: 1.5;
 
     font-weight: 400;
   }
 }
 
+/* =========================================================
+   STATUS DAS PERMISSÕES
+========================================================= */
+
 .allowedBadge,
 .blockedBadge {
-  min-width: 70px;
-  height: 25px;
+  min-width: 78px;
+  min-height: 28px;
 
-  padding: 0 8px;
+  padding: 0 9px;
 
   flex-shrink: 0;
 
@@ -699,61 +943,100 @@ select.input {
 }
 
 .allowedBadge {
-  color: #22c55e;
+  color: #4ade80;
+
+  border:
+    1px solid rgba(34, 197, 94, 0.2);
 
   background:
-    rgba(34, 197, 94, 0.09);
+    rgba(34, 197, 94, 0.13);
 }
 
 .blockedBadge {
-  color: #ef4444;
+  color: #f87171;
+
+  border:
+    1px solid rgba(239, 68, 68, 0.2);
 
   background:
-    rgba(239, 68, 68, 0.08);
+    rgba(239, 68, 68, 0.13);
 }
 
-.permissionsEmpty {
-  min-height: 120px;
+/* =========================================================
+   SEM PERMISSÕES
+========================================================= */
 
-  padding: 20px;
+.permissionsEmpty {
+  min-height: 145px;
+
+  padding: 22px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border: 1px dashed #293247;
+  border:
+    1px dashed #42506a;
+
   border-radius: 15px;
 
   background:
-    rgba(255, 255, 255, 0.01);
+    rgba(255, 255, 255, 0.018);
 
-  color: #727e91;
+  color: #8b98ab;
 
   font-size: 10px;
+  line-height: 1.5;
 
   text-align: center;
 }
 
+/* =========================================================
+   ERRO
+========================================================= */
+
+.error {
+  padding: 14px 16px;
+
+  border:
+    1px solid rgba(239, 68, 68, 0.4);
+
+  border-radius: 12px;
+
+  background:
+    rgba(239, 68, 68, 0.12);
+
+  color: #fca5a5;
+
+  font-size: 11px;
+  font-weight: 800;
+}
 
 /* =========================================================
    AÇÕES
 ========================================================= */
 
 .actions {
-  min-height: 82px;
+  min-height: 90px;
 
-  padding: 16px 18px;
-
-  border: 1px solid #242c3d;
-  border-radius: 18px;
-
-  background: #0d131d;
+  padding: 18px 20px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   gap: 20px;
+
+  border: 1px solid #344158;
+  border-radius: 18px;
+
+  background:
+    linear-gradient(135deg,
+      #121a27,
+      #0d141f);
+
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.1);
 }
 
 .actionsText {
@@ -762,17 +1045,17 @@ select.input {
   display: flex;
   flex-direction: column;
 
-  gap: 3px;
+  gap: 4px;
 
   strong {
-    color: #e8ecf2;
+    color: #f1f5f9;
 
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 900;
   }
 
   span {
-    color: #687589;
+    color: #8b98ab;
 
     font-size: 9px;
   }
@@ -782,16 +1065,14 @@ select.input {
   display: flex;
   align-items: center;
 
-  gap: 9px;
+  gap: 10px;
 }
 
 .cancelButton,
 .submitButton {
-  min-height: 40px;
+  min-height: 43px;
 
-  padding: 0 16px;
-
-  border-radius: 11px;
+  padding: 0 17px;
 
   display: inline-flex;
   align-items: center;
@@ -799,46 +1080,67 @@ select.input {
 
   gap: 8px;
 
+  border-radius: 11px;
+
   font-size: 11px;
   font-weight: 950;
 
   cursor: pointer;
 
-  transition: 0.2s ease;
+  text-decoration: none;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
 }
 
 .cancelButton {
-  border: 1px solid #2a3346;
+  border: 1px solid #46536a;
 
-  background: #111824;
+  background:
+    rgba(148, 163, 184, 0.07);
 
-  color: #c7ced9;
+  color: #d5dde8;
 
   &:hover {
-    border-color: #48546b;
+    transform: translateY(-2px);
+
+    border-color: #718096;
+
+    background:
+      rgba(148, 163, 184, 0.13);
 
     color: #ffffff;
   }
 }
 
 .submitButton {
-  border: 0;
+  border:
+    1px solid rgba(255, 213, 85, 0.7);
 
   background:
     linear-gradient(135deg,
-      #f5b301,
-      #dc9700);
+      #ffc52c,
+      #e5a000);
 
   color: #101010;
 
   box-shadow:
-    0 8px 20px rgba(245, 179, 1, 0.1);
+    0 9px 22px rgba(245, 179, 1, 0.16);
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
 
+    background:
+      linear-gradient(135deg,
+        #ffd34d,
+        #f5b301);
+
     box-shadow:
-      0 12px 26px rgba(245, 179, 1, 0.18);
+      0 13px 28px rgba(245, 179, 1, 0.25);
   }
 
   &:disabled {
@@ -847,23 +1149,6 @@ select.input {
     cursor: not-allowed;
   }
 }
-
-.error {
-  padding: 13px 15px;
-
-  border: 1px solid rgba(239, 68, 68, 0.24);
-
-  border-radius: 12px;
-
-  background:
-    rgba(239, 68, 68, 0.08);
-
-  color: #f87171;
-
-  font-size: 11px;
-  font-weight: 800;
-}
-
 
 /* =========================================================
    RESPONSIVO
@@ -879,7 +1164,7 @@ select.input {
 
 @media (max-width: 720px) {
   .header {
-    padding: 20px;
+    padding: 21px;
 
     align-items: stretch;
     flex-direction: column;
@@ -892,7 +1177,7 @@ select.input {
   }
 
   .title {
-    font-size: 29px;
+    font-size: 31px;
   }
 
   .backButton {
@@ -900,9 +1185,9 @@ select.input {
   }
 
   .formSection {
-    padding: 18px;
+    padding: 19px;
 
-    border-radius: 20px;
+    border-radius: 19px;
   }
 
   .permissionsHeader {
@@ -912,6 +1197,10 @@ select.input {
 
   .permissionCounter {
     width: 100%;
+  }
+
+  .permissionItem {
+    flex-wrap: wrap;
   }
 
   .actions {
@@ -927,15 +1216,15 @@ select.input {
   .submitButton {
     flex: 1;
   }
-
-  .permissionItem {
-    flex-wrap: wrap;
-  }
 }
 
 @media (max-width: 520px) {
   .headerMain {
     flex-direction: column;
+  }
+
+  .title {
+    font-size: 29px;
   }
 
   .actionButtons {
@@ -949,6 +1238,10 @@ select.input {
 
   .allowedBadge,
   .blockedBadge {
-    margin-left: 28px;
+    margin-left: 30px;
+  }
+
+  .statusBox {
+    align-items: flex-start;
   }
 }

@@ -1,30 +1,40 @@
-// src/app/(private)/projects/styles.module.scss 
+// src/app/(private)/projects/styles.module.scss
 
 .header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+
   gap: 24px;
-  margin-bottom: 22px;
+
+  margin-bottom: 24px;
 }
 
 .badge {
+  min-height: 31px;
+  padding: 0 14px;
+  margin-bottom: 13px;
+
   display: inline-flex;
   align-items: center;
-  height: 28px;
-  padding: 0 12px;
-  margin-bottom: 12px;
 
-  border: 1px solid rgba(245, 179, 1, 0.16);
   border-radius: 999px;
 
-  background: rgba(245, 179, 1, 0.1);
-  color: #f5b301;
+  background:
+    linear-gradient(135deg,
+      rgba(245, 179, 1, 0.2),
+      rgba(245, 179, 1, 0.08));
+
+  border:
+    1px solid rgba(245, 179, 1, 0.38);
+
+  color: #ffc52c;
 
   font-size: 11px;
   font-weight: 900;
+
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
 }
 
 .title {
@@ -32,88 +42,152 @@
 
   color: #ffffff;
 
-  font-size: 40px;
+  font-size: 42px;
   line-height: 1.05;
+
   font-weight: 950;
-  letter-spacing: -0.035em;
+
+  letter-spacing: -0.04em;
+
+  text-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .subtitle {
-  max-width: 680px;
+  max-width: 720px;
 
-  margin: 10px 0 0;
+  margin: 12px 0 0;
 
-  color: #9ca6b6;
+  color: #b5c0d1;
 
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
+/* =========================================================
+   BOTÃO NOVO PROJETO
+========================================================= */
+
 .primaryButton {
-  height: 44px;
-  padding: 0 18px;
+  min-height: 48px;
+  padding: 0 20px;
 
   border-radius: 12px;
-
-  background: linear-gradient(135deg,
-      #f5b301,
-      #dd9700);
-
-  color: #101010;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   gap: 9px;
+
+  border:
+    1px solid rgba(255, 213, 85, 0.7);
+
+  background:
+    linear-gradient(135deg,
+      #ffc52c,
+      #e5a000);
+
+  color: #101010;
 
   font-size: 13px;
   font-weight: 950;
+
   white-space: nowrap;
+  text-decoration: none;
 
-  box-shadow: 0 10px 25px rgba(245, 179, 1, 0.12);
+  box-shadow:
+    0 10px 28px rgba(245, 179, 1, 0.2);
 
-  transition: 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 
   &:hover {
-    transform: translateY(-2px);
+    transform:
+      translateY(-2px);
 
-    box-shadow: 0 14px 30px rgba(245, 179, 1, 0.2);
+    background:
+      linear-gradient(135deg,
+        #ffd34f,
+        #f5b301);
+
+    box-shadow:
+      0 15px 34px rgba(245, 179, 1, 0.3);
   }
 }
+
+/* =========================================================
+   RESUMO
+========================================================= */
 
 .summaryGrid {
   display: grid;
 
   grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+    repeat(4,
+      minmax(0, 1fr));
 
-  gap: 14px;
+  gap: 15px;
 
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .summaryCard {
-  min-height: 92px;
+  position: relative;
+  overflow: hidden;
 
-  padding: 16px 18px;
+  min-height: 105px;
 
-  border: 1px solid #242c3e;
-  border-radius: 18px;
-
-  background: linear-gradient(145deg,
-      #121824,
-      #0d131d);
+  padding: 18px 20px;
 
   display: flex;
   align-items: center;
 
-  gap: 14px;
+  gap: 15px;
 
-  transition: 0.2s ease;
+  border:
+    1px solid #344158;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(145deg,
+      #16202f,
+      #0e151f);
+
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.14);
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 3px;
+
+    background: #f5b301;
+  }
 
   &:hover {
-    border-color: #354056;
-    transform: translateY(-1px);
+    transform:
+      translateY(-3px);
+
+    border-color:
+      rgba(245, 179, 1, 0.5);
+
+    box-shadow:
+      0 16px 32px rgba(0, 0, 0, 0.22);
   }
 
   >div:last-child {
@@ -122,30 +196,45 @@
     display: flex;
     flex-direction: column;
 
-    gap: 3px;
+    gap: 5px;
   }
 
   span {
-    color: #7f8a9d;
+    color: #aab6c7;
 
     font-size: 10px;
     font-weight: 900;
+
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+
+    letter-spacing: 0.07em;
   }
 
   strong {
     color: #ffffff;
 
-    font-size: 25px;
+    font-size: 28px;
     line-height: 1;
+
     font-weight: 950;
+  }
+
+  &:nth-child(2)::before {
+    background: #22c55e;
+  }
+
+  &:nth-child(3)::before {
+    background: #3b82f6;
+  }
+
+  &:nth-child(4)::before {
+    background: #ef4444;
   }
 }
 
 .summaryIcon {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
 
   flex-shrink: 0;
 
@@ -155,49 +244,72 @@
 
   border-radius: 13px;
 
-  background: rgba(245, 179, 1, 0.1);
-  color: #f5b301;
+  border:
+    1px solid rgba(245, 179, 1, 0.2);
+
+  background:
+    rgba(245, 179, 1, 0.14);
+
+  color: #ffc42e;
 }
 
 .successIcon {
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
+  color: #4ade80;
+
+  background:
+    rgba(34, 197, 94, 0.14);
+
+  border-color:
+    rgba(34, 197, 94, 0.2);
 }
 
 .usersIcon {
-  background: rgba(59, 130, 246, 0.1);
   color: #60a5fa;
+
+  background:
+    rgba(59, 130, 246, 0.15);
+
+  border-color:
+    rgba(59, 130, 246, 0.22);
 }
 
 .blockedIcon {
-  background: rgba(239, 68, 68, 0.09);
-  color: #ef4444;
+  color: #f87171;
+
+  background:
+    rgba(239, 68, 68, 0.14);
+
+  border-color:
+    rgba(239, 68, 68, 0.2);
 }
+
+/* =========================================================
+   CARD PRINCIPAL
+========================================================= */
 
 .card {
   width: 100%;
 
   overflow: hidden;
 
-  border: 1px solid #242c3e;
-  border-radius: 24px;
+  border:
+    1px solid #344158;
 
-  background: linear-gradient(180deg,
-      #0d131d,
-      #0a1018);
+  border-radius: 22px;
+
+  background:
+    linear-gradient(180deg,
+      #111927,
+      #0b121c);
+
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.17);
 }
 
 .cardHeader {
-  min-height: 105px;
+  min-height: 118px;
 
-  padding: 22px 24px;
-
-  border-bottom: 1px solid #242c3e;
-
-  background:
-    radial-gradient(circle at 0% 0%,
-      rgba(245, 179, 1, 0.07),
-      transparent 30%);
+  padding: 24px 26px;
 
   display: flex;
   align-items: center;
@@ -205,60 +317,79 @@
 
   gap: 20px;
 
+  border-bottom:
+    1px solid #344158;
+
+  background:
+    radial-gradient(circle at 0% 0%,
+      rgba(245, 179, 1, 0.12),
+      transparent 33%),
+    linear-gradient(135deg,
+      rgba(255, 255, 255, 0.018),
+      transparent);
+
   h2 {
-    margin: 4px 0 5px;
+    margin: 4px 0 6px;
 
     color: #ffffff;
 
-    font-size: 19px;
+    font-size: 21px;
     font-weight: 950;
+
     letter-spacing: -0.02em;
   }
 
   p {
     margin: 0;
 
-    color: #798498;
+    color: #97a4b7;
 
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 }
 
 .cardEyebrow {
-  color: #f5b301;
+  color: #ffc42e;
 
-  font-size: 9px;
-  font-weight: 900;
+  font-size: 10px;
+  font-weight: 950;
+
   text-transform: uppercase;
+
   letter-spacing: 0.12em;
 }
 
 .projectCount {
-  height: 30px;
-
-  padding: 0 12px;
-
-  border: 1px solid #2a3346;
-  border-radius: 999px;
-
-  background: rgba(255,
-      255,
-      255,
-      0.025);
-
-  color: #9ba6b7;
+  min-height: 34px;
+  padding: 0 14px;
 
   display: inline-flex;
   align-items: center;
 
+  border-radius: 999px;
+
+  border:
+    1px solid #3b485d;
+
+  background:
+    rgba(255, 255, 255, 0.04);
+
+  color: #c2ccda;
+
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 850;
+
   white-space: nowrap;
 }
 
+/* =========================================================
+   TABELA
+========================================================= */
+
 .table {
   width: 100%;
+
   overflow-x: auto;
 }
 
@@ -277,25 +408,25 @@
 }
 
 .tableHeader {
-  min-height: 48px;
+  min-height: 53px;
 
-  padding: 0 22px;
+  padding: 0 24px;
 
-  border-bottom: 1px solid #242c3e;
+  border-bottom:
+    1px solid #344158;
 
-  background: rgba(255,
-      255,
-      255,
-      0.012);
+  background:
+    rgba(255, 255, 255, 0.025);
 
   span {
-    color: #687488;
+    color: #95a2b5;
 
     font-size: 10px;
     font-weight: 950;
 
     text-transform: uppercase;
-    letter-spacing: 0.07em;
+
+    letter-spacing: 0.08em;
   }
 }
 
@@ -306,23 +437,22 @@
 .tableRow {
   position: relative;
 
-  min-height: 92px;
+  min-height: 98px;
 
-  padding: 15px 22px;
+  padding: 16px 24px;
 
-  border-bottom: 1px solid rgba(36, 44, 62, 0.75);
+  border-bottom:
+    1px solid rgba(52, 65, 88, 0.7);
 
-  transition: 0.2s ease;
+  background:
+    rgba(255, 255, 255, 0.005);
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:last-child {
     border-bottom: 0;
-  }
-
-  &:hover {
-    background: rgba(255,
-        255,
-        255,
-        0.018);
   }
 
   &::before {
@@ -330,23 +460,41 @@
 
     position: absolute;
 
-    top: 18px;
-    bottom: 18px;
+    top: 15px;
+    bottom: 15px;
     left: 0;
 
-    width: 2px;
+    width: 3px;
 
-    border-radius: 999px;
+    border-radius:
+      0 999px 999px 0;
 
     background: transparent;
 
-    transition: 0.2s;
+    transition:
+      background 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  &:hover {
+    background:
+      rgba(255, 255, 255, 0.025);
+
+    box-shadow:
+      inset 0 0 35px rgba(245, 179, 1, 0.018);
   }
 
   &:hover::before {
     background: #f5b301;
+
+    box-shadow:
+      0 0 12px rgba(245, 179, 1, 0.45);
   }
 }
+
+/* =========================================================
+   PROJETO
+========================================================= */
 
 .projectCell {
   min-width: 0;
@@ -354,12 +502,12 @@
   display: flex;
   align-items: center;
 
-  gap: 12px;
+  gap: 13px;
 }
 
 .projectAvatar {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
 
   flex-shrink: 0;
 
@@ -369,14 +517,21 @@
 
   border-radius: 13px;
 
-  border: 1px solid rgba(245, 179, 1, 0.16);
+  border:
+    1px solid rgba(245, 179, 1, 0.25);
 
-  background: rgba(245, 179, 1, 0.08);
+  background:
+    linear-gradient(145deg,
+      rgba(245, 179, 1, 0.16),
+      rgba(245, 179, 1, 0.07));
 
-  color: #f5b301;
+  color: #ffc42e;
 
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 950;
+
+  box-shadow:
+    inset 0 0 15px rgba(245, 179, 1, 0.04);
 }
 
 .projectInfo {
@@ -387,14 +542,14 @@
 
     margin-bottom: 5px;
 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
     color: #ffffff;
 
     font-size: 13px;
     font-weight: 900;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   small {
@@ -406,18 +561,22 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 
-    color: #687488;
+    color: #748299;
 
     font-size: 9px;
   }
 }
+
+/* =========================================================
+   DADOS
+========================================================= */
 
 .dataCell {
   min-width: 0;
 }
 
 .slug {
-  color: #d7dce5;
+  color: #e0e6ef;
 
   font-size: 12px;
   font-weight: 800;
@@ -429,20 +588,22 @@
   width: fit-content;
   max-width: 100%;
 
-  min-height: 30px;
+  min-height: 32px;
 
-  padding: 6px 9px;
+  padding: 6px 10px;
 
-  border: 1px solid rgba(245, 179, 1, 0.28);
+  display: inline-flex;
+  align-items: center;
 
   border-radius: 9px;
 
-  background: rgba(245,
-      179,
-      1,
-      0.07);
+  border:
+    1px solid rgba(245, 179, 1, 0.38);
 
-  color: #f5b301;
+  background:
+    rgba(245, 179, 1, 0.1);
+
+  color: #ffc42e;
 
   font-family:
     ui-monospace,
@@ -453,10 +614,7 @@
     monospace;
 
   font-size: 10px;
-  font-weight: 800;
-
-  display: inline-flex;
-  align-items: center;
+  font-weight: 850;
 
   word-break: break-all;
 }
@@ -467,17 +625,21 @@
   display: inline-flex;
   align-items: center;
 
-  gap: 6px;
+  gap: 7px;
 
-  color: #dce2eb;
+  color: #e7ecf3;
 
   font-size: 12px;
   font-weight: 900;
 
   svg {
-    color: #66758d;
+    color: #7f8da3;
   }
 }
+
+/* =========================================================
+   STATUS
+========================================================= */
 
 .statusCell {
   display: flex;
@@ -486,25 +648,25 @@
 
 .active,
 .inactive {
-  min-width: 78px;
-  height: 28px;
+  min-width: 84px;
+  min-height: 30px;
 
-  padding: 0 10px;
-
-  border-radius: 999px;
+  padding: 0 11px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  gap: 6px;
+  gap: 7px;
+
+  border-radius: 999px;
 
   font-size: 10px;
   font-weight: 950;
 
   i {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
 
     border-radius: 50%;
 
@@ -513,78 +675,123 @@
 }
 
 .active {
-  background: rgba(34, 197, 94, 0.11);
-  color: #22c55e;
+  color: #4ade80;
+
+  border:
+    1px solid rgba(34, 197, 94, 0.2);
+
+  background:
+    rgba(34, 197, 94, 0.14);
+
+  i {
+    box-shadow:
+      0 0 8px rgba(34, 197, 94, 0.7);
+  }
 }
 
 .inactive {
-  background: rgba(239, 68, 68, 0.11);
-  color: #ef4444;
+  color: #f87171;
+
+  border:
+    1px solid rgba(239, 68, 68, 0.22);
+
+  background:
+    rgba(239, 68, 68, 0.14);
+
+  i {
+    box-shadow:
+      0 0 8px rgba(239, 68, 68, 0.65);
+  }
 }
+
+/* =========================================================
+   AÇÕES
+========================================================= */
 
 .actions {
   display: flex;
   align-items: center;
 
-  gap: 7px;
+  gap: 8px;
 
   flex-wrap: nowrap;
 }
 
 .viewButton,
 .editButton {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
 
   flex-shrink: 0;
-
-  border-radius: 11px;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  transition: 0.2s ease;
+  border-radius: 11px;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
-    transform: translateY(-2px);
+    transform:
+      translateY(-2px);
   }
 }
 
 .viewButton {
-  border: 1px solid #2a3345;
+  color: #cbd5e1;
 
-  background: #111824;
+  border:
+    1px solid #40506a;
 
-  color: #b7c0ce;
+  background:
+    rgba(148, 163, 184, 0.07);
 
   &:hover {
-    border-color:
-      rgba(245, 179, 1, 0.5);
+    color: #ffffff;
 
-    color: #f5b301;
+    border-color:
+      rgba(148, 163, 184, 0.7);
 
     background:
-      rgba(245, 179, 1, 0.06);
+      rgba(148, 163, 184, 0.13);
+
+    box-shadow:
+      0 7px 18px rgba(0, 0, 0, 0.16);
   }
 }
 
 .editButton {
-  border: 1px solid rgba(59, 130, 246, 0.25);
-
-  background:
-    rgba(59, 130, 246, 0.08);
-
   color: #60a5fa;
 
+  border:
+    1px solid rgba(59, 130, 246, 0.38);
+
+  background:
+    rgba(59, 130, 246, 0.12);
+
   &:hover {
+    color: #93c5fd;
+
     border-color:
-      rgba(59, 130, 246, 0.6);
+      rgba(59, 130, 246, 0.75);
 
     background:
-      rgba(59, 130, 246, 0.14);
+      rgba(59, 130, 246, 0.2);
+
+    box-shadow:
+      0 7px 18px rgba(59, 130, 246, 0.12);
   }
 }
+
+/* =========================================================
+   SEM PROJETOS
+========================================================= */
 
 .empty {
   min-height: 330px;
@@ -596,12 +803,12 @@
   align-items: center;
   justify-content: center;
 
-  gap: 8px;
+  gap: 9px;
 
   text-align: center;
 
   strong {
-    margin-top: 6px;
+    margin-top: 7px;
 
     color: #ffffff;
 
@@ -610,36 +817,36 @@
   }
 
   >span {
-    color: #7f8999;
+    color: #909daf;
 
     font-size: 12px;
   }
 }
 
 .emptyIcon {
-  width: 56px;
-  height: 56px;
+  width: 58px;
+  height: 58px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border: 1px solid rgba(245, 179, 1, 0.15);
-
   border-radius: 17px;
 
-  background:
-    rgba(245, 179, 1, 0.07);
+  border:
+    1px solid rgba(245, 179, 1, 0.22);
 
-  color: #f5b301;
+  background:
+    rgba(245, 179, 1, 0.11);
+
+  color: #ffc42e;
 }
 
 .emptyButton {
-  height: 38px;
+  min-height: 40px;
 
-  margin-top: 12px;
-
-  padding: 0 15px;
+  margin-top: 13px;
+  padding: 0 16px;
 
   display: inline-flex;
   align-items: center;
@@ -649,18 +856,28 @@
 
   border-radius: 10px;
 
-  background: #f5b301;
+  background:
+    linear-gradient(135deg,
+      #ffc52c,
+      #e5a000);
 
-  color: #111111;
+  color: #101010;
 
   font-size: 12px;
   font-weight: 900;
+
+  text-decoration: none;
 }
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
 
 @media (max-width: 1100px) {
   .summaryGrid {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      repeat(2,
+        minmax(0, 1fr));
   }
 }
 
@@ -682,28 +899,38 @@
 
 @media (max-width: 720px) {
   .title {
-    font-size: 32px;
+    font-size: 33px;
   }
 
   .summaryGrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:
+      1fr 1fr;
   }
 
   .card {
-    border: 0;
-    background: transparent;
     overflow: visible;
+
+    border: 0;
+
+    background: transparent;
+
+    box-shadow: none;
   }
 
   .cardHeader {
-    padding: 18px;
-
-    border: 1px solid #242c3e;
-    border-radius: 20px;
+    padding: 19px;
 
     margin-bottom: 14px;
 
-    background: #0d131d;
+    border:
+      1px solid #344158;
+
+    border-radius: 19px;
+
+    background:
+      linear-gradient(145deg,
+        #121a27,
+        #0d141f);
   }
 
   .table {
@@ -717,6 +944,7 @@
   .tableBody {
     display: flex;
     flex-direction: column;
+
     gap: 14px;
   }
 
@@ -726,15 +954,22 @@
 
     padding: 18px;
 
-    border: 1px solid #242c3e !important;
-    border-radius: 20px;
-
-    background: #0d131d;
-
     display: grid;
-    grid-template-columns: 1fr;
+
+    grid-template-columns:
+      1fr;
 
     gap: 17px;
+
+    border:
+      1px solid #344158 !important;
+
+    border-radius: 19px;
+
+    background:
+      linear-gradient(145deg,
+        #121a27,
+        #0d141f);
 
     &::before {
       display: none;
@@ -744,7 +979,8 @@
   .projectCell {
     padding-bottom: 14px;
 
-    border-bottom: 1px solid #242c3e;
+    border-bottom:
+      1px solid #344158;
   }
 
   .projectInfo small {
@@ -752,66 +988,67 @@
   }
 
   .dataCell,
-  .statusCell,
-  .actions {
+  .statusCell {
     display: grid;
-    grid-template-columns: 105px 1fr;
+
+    grid-template-columns:
+      105px 1fr;
 
     align-items: center;
 
     gap: 10px;
 
     &::before {
-      content: attr(data-label);
+      content:
+        attr(data-label);
 
-      color: #667287;
+      color: #8592a6;
 
       font-size: 9px;
       font-weight: 950;
 
       text-transform: uppercase;
+
       letter-spacing: 0.07em;
     }
   }
 
   .actions {
-    grid-template-columns: 105px 1fr;
-
     padding-top: 14px;
 
-    border-top: 1px solid #242c3e;
+    border-top:
+      1px solid #344158;
 
-    >a,
-    >button {
-      grid-column: auto;
+    &::before {
+      content:
+        attr(data-label);
+
+      margin-right: auto;
+
+      color: #8592a6;
+
+      font-size: 9px;
+      font-weight: 950;
+
+      text-transform: uppercase;
+
+      letter-spacing: 0.07em;
     }
-  }
-
-  .actions::before {
-    grid-row: 1;
-  }
-
-  .actions {
-    display: flex;
-    align-items: center;
-  }
-
-  .actions::before {
-    margin-right: auto;
   }
 }
 
 @media (max-width: 520px) {
   .summaryGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 
   .summaryCard {
-    min-height: 78px;
+    min-height: 86px;
   }
 
   .title {
-    font-size: 30px;
+    font-size: 31px;
   }
 
   .subtitle {

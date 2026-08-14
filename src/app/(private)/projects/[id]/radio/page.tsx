@@ -1,3 +1,5 @@
+//src/app/(private)/projects/[id]//radio/page.tsx
+
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminShell } from "../../../../../components/layout/AdminShell/AdminShell";
