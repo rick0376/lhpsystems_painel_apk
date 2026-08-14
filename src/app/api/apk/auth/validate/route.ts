@@ -39,8 +39,7 @@ export async function POST(
 ) {
   try {
     /*
-     * Primeiro mantém toda a validação
-     * que já existia:
+     * Valida:
      *
      * token
      * usuário
@@ -108,14 +107,6 @@ export async function POST(
      * =====================================================
      * PERMISSÕES DINÂMICAS
      * =====================================================
-     *
-     * Buscamos novamente sempre que
-     * /validate for chamado.
-     *
-     * Dessa forma, se você bloquear uma
-     * permissão no painel, o APK consegue
-     * receber a alteração sem exigir
-     * criação de um novo usuário.
      */
 
     const [
@@ -184,8 +175,11 @@ export async function POST(
       );
 
     /*
-     * Renova o token.
+     * =====================================================
+     * RENOVA TOKEN
+     * =====================================================
      */
+
     const access =
       await createApkToken({
         userId:
@@ -199,6 +193,12 @@ export async function POST(
             .deviceId,
       });
 
+    /*
+     * =====================================================
+     * RESPOSTA
+     * =====================================================
+     */
+
     return NextResponse.json(
       {
         allowed: true,
@@ -210,14 +210,10 @@ export async function POST(
           access.expiresInSeconds,
 
         /*
-         * NOVO
+         * Permissões dinâmicas completas.
          */
         permissions,
 
-        /*
-         * Mantemos os campos antigos
-         * temporariamente.
-         */
         user: {
           id:
             authorization.user.id,
@@ -233,6 +229,14 @@ export async function POST(
             authorization.user
               .expiresAt,
 
+          maxDevices:
+            authorization.user
+              .maxDevices,
+
+          /*
+           * Permissões antigas.
+           * Mantidas por compatibilidade.
+           */
           canTransmit:
             authorization.user
               .canTransmit,
@@ -288,9 +292,12 @@ export async function POST(
             authorization.user
               .canViewRadioAudit,
 
-          maxDevices:
-            authorization.user
-              .maxDevices,
+          /*
+           * Todas as permissões dinâmicas
+           * cadastradas no Painel LHP
+           * entram também dentro de user.
+           */
+          ...permissions,
         },
 
         project: {

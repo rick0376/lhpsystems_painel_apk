@@ -5,6 +5,7 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { Plus } from "lucide-react";
+
 import styles from "./styles.module.scss";
 
 type Permission = {
@@ -29,53 +30,81 @@ export default function PermissionsManager({
     const [permissions, setPermissions] =
         useState<Permission[]>(initialPermissions);
 
-    const [name, setName] = useState("");
-    const [key, setKey] = useState("");
-    const [description, setDescription] = useState("");
+    const [name, setName] =
+        useState("");
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const [key, setKey] =
+        useState("");
 
-    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    const [description, setDescription] =
+        useState("");
+
+    const [loading, setLoading] =
+        useState(false);
+
+    const [error, setError] =
+        useState("");
+
+    async function handleSubmit(
+        event: FormEvent<HTMLFormElement>,
+    ) {
         event.preventDefault();
 
         setLoading(true);
         setError("");
 
         try {
-            const response = await fetch(
-                `/api/projects/${projectId}/permissions`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        name,
-                        key,
-                        description,
-                    }),
-                },
-            );
+            const response =
+                await fetch(
+                    `/api/projects/${projectId}/permissions`,
+                    {
+                        method: "POST",
 
-            const data = await response.json();
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+                        },
+
+                        body: JSON.stringify({
+                            name,
+                            key,
+                            description,
+                        }),
+                    },
+                );
+
+            const data =
+                await response.json();
 
             if (!response.ok) {
-                setError(data?.error || "Não foi possível criar a permissão.");
+                setError(
+                    data?.error ||
+                    "Não foi possível criar a permissão.",
+                );
+
                 return;
             }
 
-            setPermissions((current) =>
-                [...current, data.permission].sort((a, b) =>
-                    a.name.localeCompare(b.name),
-                ),
+            setPermissions(
+                (current) =>
+                    [
+                        ...current,
+                        data.permission,
+                    ].sort(
+                        (a, b) =>
+                            a.name.localeCompare(
+                                b.name,
+                            ),
+                    ),
             );
 
             setName("");
             setKey("");
             setDescription("");
         } catch {
-            setError("Erro de conexão com o servidor.");
+            setError(
+                "Erro de conexão com o servidor.",
+            );
         } finally {
             setLoading(false);
         }
@@ -85,7 +114,9 @@ export default function PermissionsManager({
         <>
             <section className={styles.header}>
                 <div>
-                    <span className={styles.badge}>Permissões APK</span>
+                    <span className={styles.badge}>
+                        Permissões APK
+                    </span>
 
                     <h1>{projectName}</h1>
 
@@ -106,18 +137,30 @@ export default function PermissionsManager({
                 <div className={styles.sectionHeader}>
                     <div>
                         <h2>Nova permissão</h2>
-                        <p>Crie uma função que poderá ser liberada ou bloqueada por usuário.</p>
+
+                        <p>
+                            Crie uma função que poderá ser liberada ou bloqueada por usuário.
+                        </p>
                     </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className={styles.form}>
+                <form
+                    onSubmit={handleSubmit}
+                    className={styles.form}
+                >
                     <label>
-                        <span>Nome da permissão</span>
+                        <span>
+                            Nome da permissão
+                        </span>
 
                         <input
                             value={name}
-                            onChange={(event) => setName(event.target.value)}
-                            placeholder="Ex.: Usar Inteligência Artificial"
+                            onChange={(event) =>
+                                setName(
+                                    event.target.value,
+                                )
+                            }
+                            placeholder="Ex.: Excluir playlists"
                             required
                         />
                     </label>
@@ -130,12 +173,17 @@ export default function PermissionsManager({
                             onChange={(event) =>
                                 setKey(
                                     event.target.value
-                                        .toLowerCase()
-                                        .replace(/\s+/g, "_")
-                                        .replace(/[^a-z0-9_]/g, ""),
+                                        .replace(
+                                            /\s+/g,
+                                            "_",
+                                        )
+                                        .replace(
+                                            /[^a-zA-Z0-9_]/g,
+                                            "",
+                                        ),
                                 )
                             }
-                            placeholder="Ex.: use_ai"
+                            placeholder="Ex.: canDeleteRadioPlaylists"
                             required
                         />
                     </label>
@@ -145,8 +193,12 @@ export default function PermissionsManager({
 
                         <input
                             value={description}
-                            onChange={(event) => setDescription(event.target.value)}
-                            placeholder="Ex.: Permite utilizar a pesquisa inteligente da Bíblia."
+                            onChange={(event) =>
+                                setDescription(
+                                    event.target.value,
+                                )
+                            }
+                            placeholder="Ex.: Permite excluir playlists da rádio."
                         />
                     </label>
 
@@ -157,9 +209,15 @@ export default function PermissionsManager({
                     )}
 
                     <div className={styles.actions}>
-                        <button type="submit" disabled={loading}>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                        >
                             <Plus size={18} />
-                            {loading ? "Salvando..." : "Adicionar permissão"}
+
+                            {loading
+                                ? "Salvando..."
+                                : "Adicionar permissão"}
                         </button>
                     </div>
                 </form>
@@ -168,7 +226,10 @@ export default function PermissionsManager({
             <section className={styles.listCard}>
                 <div className={styles.sectionHeader}>
                     <div>
-                        <h2>Permissões cadastradas</h2>
+                        <h2>
+                            Permissões cadastradas
+                        </h2>
+
                         <p>
                             {permissions.length} permissão(ões) neste aplicativo.
                         </p>
@@ -181,32 +242,46 @@ export default function PermissionsManager({
                     </div>
                 ) : (
                     <div className={styles.grid}>
-                        {permissions.map((permission) => (
-                            <article
-                                key={permission.id}
-                                className={styles.permission}
-                            >
-                                <div>
-                                    <strong>{permission.name}</strong>
-
-                                    <code>{permission.key}</code>
-
-                                    {permission.description && (
-                                        <p>{permission.description}</p>
-                                    )}
-                                </div>
-
-                                <span
+                        {permissions.map(
+                            (permission) => (
+                                <article
+                                    key={permission.id}
                                     className={
-                                        permission.active
-                                            ? styles.active
-                                            : styles.inactive
+                                        styles.permission
                                     }
                                 >
-                                    {permission.active ? "Ativa" : "Inativa"}
-                                </span>
-                            </article>
-                        ))}
+                                    <div>
+                                        <strong>
+                                            {permission.name}
+                                        </strong>
+
+                                        <code>
+                                            {permission.key}
+                                        </code>
+
+                                        {permission.description && (
+                                            <p>
+                                                {
+                                                    permission.description
+                                                }
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <span
+                                        className={
+                                            permission.active
+                                                ? styles.active
+                                                : styles.inactive
+                                        }
+                                    >
+                                        {permission.active
+                                            ? "Ativa"
+                                            : "Inativa"}
+                                    </span>
+                                </article>
+                            ),
+                        )}
                     </div>
                 )}
             </section>

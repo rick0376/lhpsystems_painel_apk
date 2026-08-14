@@ -124,7 +124,7 @@ export async function POST(
 
     /*
      * Busca o projeto e todas as
-     * permissões dinâmicas ativas dele.
+     * permissões dinâmicas ativas.
      */
     const project =
       await prisma.appProject.findFirst({
@@ -163,13 +163,14 @@ export async function POST(
     }
 
     /*
-     * Busca o usuário e as permissões
-     * que foram atribuídas a ele.
+     * Busca usuário e permissões
+     * dinâmicas atribuídas.
      */
     const apkUser =
       await prisma.apkUser.findFirst({
         where: {
-          projectId: project.id,
+          projectId:
+            project.id,
 
           username:
             data.username,
@@ -215,7 +216,8 @@ export async function POST(
       );
     }
 
-    const now = new Date();
+    const now =
+      new Date();
 
     if (
       apkUser.expiresAt &&
@@ -229,8 +231,11 @@ export async function POST(
     }
 
     /*
-     * Validação do dispositivo.
+     * =====================================================
+     * DISPOSITIVO
+     * =====================================================
      */
+
     const existingDevice =
       await prisma.device.findUnique({
         where: {
@@ -298,7 +303,8 @@ export async function POST(
     } else {
       await prisma.device.update({
         where: {
-          id: existingDevice.id,
+          id:
+            existingDevice.id,
         },
 
         data: {
@@ -328,17 +334,6 @@ export async function POST(
         ),
       );
 
-    /*
-     * Monta:
-     *
-     * {
-     *   use_ai: true,
-     *   create_notes: false
-     * }
-     *
-     * Se não existir registro para o usuário,
-     * assume false por segurança.
-     */
     const permissions =
       Object.fromEntries(
         project.permissions.map(
@@ -353,11 +348,15 @@ export async function POST(
       );
 
     /*
-     * Gera token.
+     * =====================================================
+     * TOKEN
+     * =====================================================
      */
+
     const access =
       await createApkToken({
-        userId: apkUser.id,
+        userId:
+          apkUser.id,
 
         projectId:
           project.id,
@@ -365,6 +364,12 @@ export async function POST(
         deviceId:
           data.deviceId,
       });
+
+    /*
+     * =====================================================
+     * RESPOSTA
+     * =====================================================
+     */
 
     return NextResponse.json(
       {
@@ -380,18 +385,13 @@ export async function POST(
           buildSupport(project),
 
         /*
-         * NOVO:
-         * permissões específicas
-         * daquele APK.
+         * Permissões dinâmicas completas.
          */
         permissions,
 
-        /*
-         * Mantemos os campos antigos
-         * para não quebrar o Radio Manager.
-         */
         user: {
-          id: apkUser.id,
+          id:
+            apkUser.id,
 
           name:
             apkUser.name,
@@ -402,6 +402,13 @@ export async function POST(
           expiresAt:
             apkUser.expiresAt,
 
+          maxDevices:
+            apkUser.maxDevices,
+
+          /*
+           * Permissões antigas.
+           * Mantidas por compatibilidade.
+           */
           canTransmit:
             apkUser.canTransmit,
 
@@ -444,12 +451,30 @@ export async function POST(
           canViewRadioAudit:
             apkUser.canViewRadioAudit,
 
-          maxDevices:
-            apkUser.maxDevices,
+          /*
+           * IMPORTANTE:
+           *
+           * Coloca automaticamente dentro
+           * do usuário TODAS as permissões
+           * dinâmicas cadastradas no Painel.
+           *
+           * Exemplos:
+           *
+           * canViewRadioPlaylists
+           * canCreateRadioPlaylists
+           * canDeleteRadioPlaylists
+           * canEditRadioSchedules
+           * canClearRadioAudit
+           *
+           * Não precisamos criar uma coluna
+           * nova no Prisma para cada uma.
+           */
+          ...permissions,
         },
 
         project: {
-          id: project.id,
+          id:
+            project.id,
 
           name:
             project.name,
@@ -463,7 +488,8 @@ export async function POST(
       },
       {
         headers: {
-          "Cache-Control": "no-store",
+          "Cache-Control":
+            "no-store",
         },
       },
     );
